@@ -2,7 +2,7 @@
 
 A web application for managing trekking activities, developed using Flask.
 
-This project is being developed as part of the **Modern Application Development** course in the **IIT Madras BS Degree** program.
+This project is being developed as part of the **Modern Application Development - I** course in the **IIT Madras BS Degree** program.
 
 ## Features
 
