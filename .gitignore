@@ -1,5 +1,8 @@
 __pycache__/
 *.pyc
-.venv/
-.vscode/
+
+instance/
+*.db
+
+venv/
 .env
