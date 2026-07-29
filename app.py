@@ -17,7 +17,12 @@ def dashboard():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    return f"Welcome {session['name']}! You are logged in as {session['role']}."
+    if session["role"] == "admin":
+        return redirect(url_for("admin_dashboard"))
+    elif session["role"] == "trek_staff":
+        return redirect(url_for("staff_dashboard"))
+    elif session["role"] == "user":
+        return redirect(url_for("user_dashboard"))
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -80,6 +85,33 @@ def register():
         return redirect(url_for("login"))
 
     return render_template("register.html")
+
+@app.route("/admin")
+def admin_dashboard():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    return render_template("admin_dashboard.html")
+
+@app.route("/staff")
+def staff_dashboard():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    if session["role"] != "trek_staff":
+        return "Access Denied", 403
+    return render_template("staff_dashboard.html")
+
+
+@app.route("/user")
+def user_dashboard():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    if session["role"] != "user":
+        return "Access Denied", 403
+    return render_template("user_dashboard.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
