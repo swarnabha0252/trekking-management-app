@@ -16,27 +16,41 @@ This project is being developed as part of the **Modern Application Development 
 - Session management
 - Logout functionality
 - Role-based access control (Admin, Trek Staff, User)
-- Admin dashboard layout
-- Responsive sidebar navigation
-- Dashboard statistics cards (UI)
-- Account approval check
-- User blacklist check
-- Password visibility toggle
+- Admin dashboard
+- Manage treks
+- Add trek
+- Edit trek
+- Delete trek
+- Assign trek staff
+- Reassign trek staff
+- Manage staff
+- Approve staff accounts
+- Reject staff accounts
+- Automatic trek opening after staff assignment
+- Manual booking open/close by admin
+- Automatic booking closure when all slots are filled
+- User dashboard
+- View available treks
+- Trek booking
+- Duplicate booking prevention
+- View booking details
+- Cancel booking
+- Automatic slot restoration after cancellation
+- My Bookings
 - Responsive interface using Bootstrap 5
 - Jinja2 templating
 
 ### Planned
 
-- Trek management
-- Staff management
-- User management
-- Booking management
 - Trek Staff dashboard
-- User dashboard
-- Recent bookings section
+- Participant management
+- Trek completion workflow
+- Booking completion workflow
 - Reports and analytics
 - Search functionality
 - Settings page
+- Profile management
+- Dashboard improvements
 
 ---
 
@@ -59,23 +73,35 @@ This project is being developed as part of the **Modern Application Development 
 ```text
 trekking-management-app/
 ├── app.py
+├── config.py
 ├── extensions.py
-├── models/
-│   └── user.py
-├── templates/
-│   ├── login.html
-│   ├── register.html
-│   ├── admin_dashboard.html
-│   ├── staff_dashboard.html
-│   └── user_dashboard.html
-├── static/
-│   ├── css/
-│   ├── js/
-│   └── images/
-├── instance/
 ├── requirements.txt
+├── README.md
 ├── .gitignore
-└── README.md
+├── instance/
+│   └── trekking.db
+├── models/
+│   ├── booking.py
+│   ├── trek.py
+│   └── user.py
+├── routes/
+│   ├── admin.py
+│   ├── auth.py
+│   ├── staff.py
+│   └── user.py
+├── static/
+│   └── style.css
+└── templates/
+    ├── admin_dashboard.html
+    ├── base.html
+    ├── login.html
+    ├── manage_staff.html
+    ├── manage_treks.html
+    ├── manage_users.html
+    ├── my_bookings.html
+    ├── register.html
+    ├── staff_dashboard.html
+    └── user_dashboard.html
 ```
 
 ---
@@ -128,7 +154,7 @@ python app.py
 
 ### 7. Open the application
 
-```
+```text
 http://127.0.0.1:5000/login
 ```
 
@@ -138,20 +164,26 @@ http://127.0.0.1:5000/login
 
 - Login Page
 - Registration Page
-- Admin Dashboard (UI)
+- Admin Dashboard
+- Manage Treks
+- Manage Staff
+- Manage Users
+- User Dashboard
+- My Bookings
 
 ---
 
 ## Future Enhancements
 
-- Complete Admin Dashboard
-- Trek CRUD Operations
-- Staff Approval System
-- User Management
-- Booking Management
+- Complete Trek Staff Dashboard
+- Participant Management
+- Trek Completion Workflow
+- Booking Completion Workflow
 - Reports & Analytics
 - Search & Filtering
-- Responsive Dashboard Improvements
+- Profile Management
+- Dashboard Improvements
+- AJAX-based Notifications
 
 ---
 
