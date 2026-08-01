@@ -86,6 +86,7 @@ def reject_staff(user_id):
 
 @admin.route("/admin/treks")
 def manage_treks():
+
     if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
@@ -94,11 +95,17 @@ def manage_treks():
 
     treks = Trek.query.all()
 
+    approved_staff = User.query.filter_by(
+        role="trek_staff",
+        is_approved=True,
+        is_blacklisted=False
+    ).all()
+
     return render_template(
         "manage_treks.html",
-        treks=treks
+        treks=treks,
+        approved_staff=approved_staff
     )
-
 
 @admin.route("/admin/treks/add", methods=["GET", "POST"])
 def add_trek():
@@ -192,6 +199,28 @@ def delete_trek(trek_id):
         return "Trek not found.", 404
 
     db.session.delete(trek)
+    db.session.commit()
+
+    return redirect(url_for("admin.manage_treks"))
+
+@admin.route("/admin/treks/assign/<int:trek_id>/<int:staff_id>")
+def assign_staff(trek_id, staff_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    trek = db.session.get(Trek, trek_id)
+
+    staff = db.session.get(User, staff_id)
+
+    if trek is None or staff is None:
+        return "Not Found", 404
+
+    trek.assigned_staff_id = staff.id
+
     db.session.commit()
 
     return redirect(url_for("admin.manage_treks"))
