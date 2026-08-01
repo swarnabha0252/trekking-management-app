@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask
 from extensions import db
 from models.user import User
 from models.trek import Trek
@@ -6,18 +6,21 @@ from routes.auth import auth
 from routes.admin import admin
 from routes.user import user
 from routes.staff import staff
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
+
 app.config["SECRET_KEY"] = "my-super-secret-key"
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///trekking.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///trekking.db"
+
 db.init_app(app)
 
 with app.app_context():
     db.create_all()
-    admin = User.query.filter_by(role="admin").first()
 
-    if admin is None:
+    admin_user = User.query.filter_by(role="admin").first()
+
+    if admin_user is None:
         first_admin = User(
             name="Admin",
             email="admin@example.com",

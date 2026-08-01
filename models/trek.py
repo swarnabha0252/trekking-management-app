@@ -1,6 +1,7 @@
 from datetime import datetime
 from extensions import db
 
+
 class Trek(db.Model):
     __tablename__ = "treks"
 
@@ -20,7 +21,11 @@ class Trek(db.Model):
         nullable=True
     )
 
-    staff = db.relationship("User", backref="assigned_treks")
+    assigned_staff = db.relationship(
+        "User",
+        foreign_keys=[assigned_staff_id],
+        backref="assigned_treks"
+    )
 
     status = db.Column(
         db.String(20),

@@ -15,7 +15,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
 
-            <a class="navbar-brand fw-bold" href="{{ url_for('admin_dashboard') }}">
+            <a class="navbar-brand fw-bold" href="{{ url_for('admin.admin_dashboard') }}">
                 Trekking Management Application
             </a>
 
@@ -36,19 +36,19 @@
                 <ul class="nav flex-column">
 
                     <li class="nav-item">
-                        <a class="nav-link active fw-bold" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+                        <a class="nav-link active fw-bold" href="{{ url_for('admin.admin_dashboard') }}">Dashboard</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Treks</a>
+                        <a class="nav-link" href="{{ url_for('admin.manage_treks') }}">Treks</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Staff</a>
+                        <a class="nav-link" href="{{ url_for('admin.manage_staff') }}">Staff</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Users</a>
+                        <a class="nav-link" href="{{ url_for('admin.manage_users') }}">Users</a>
                     </li>
 
                     <li class="nav-item">
@@ -68,7 +68,7 @@
                     </li>
 
                     <li class="nav-item mt-3">
-                        <a class="nav-link text-danger" href="{{ url_for('logout') }}">
+                        <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">
                             Logout
                         </a>
                     </li>

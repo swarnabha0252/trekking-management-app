@@ -12,11 +12,11 @@ def dashboard():
         return redirect(url_for("login"))
 
     if session["role"] == "admin":
-        return redirect(url_for("admin_dashboard"))
+        return redirect(url_for("admin.admin_dashboard"))
     elif session["role"] == "trek_staff":
-        return redirect(url_for("staff_dashboard"))
+        return redirect(url_for("staff.staff_dashboard"))
     elif session["role"] == "user":
-        return redirect(url_for("user_dashboard"))
+        return redirect(url_for("user.user_dashboard"))
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
@@ -38,7 +38,7 @@ def login():
             session["role"] = user.role
             session["name"] = user.name
 
-            return redirect(url_for("dashboard"))
+            return redirect(url_for("auth.dashboard"))
 
         return "Invalid email or password."
 
@@ -47,7 +47,7 @@ def login():
 @auth.route("/logout")
 def logout():
     session.clear()
-    return redirect(url_for("login"))
+    return redirect(url_for("auth.login"))
 
 @auth.route("/register", methods=["GET", "POST"])
 def register():
@@ -88,6 +88,6 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        return redirect(url_for("login"))
+        return redirect(url_for("auth.login"))
 
     return render_template("register.html")

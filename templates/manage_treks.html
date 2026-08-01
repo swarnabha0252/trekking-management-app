@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Treks</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+
+            <a class="navbar-brand fw-bold" href="#">
+                Trekking Management Application
+            </a>
+
+            <div class="ms-auto">
+                <span class="navbar-text text-white">
+                    👤 {{ session["name"] }}
+                </span>
+            </div>
+
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h2>Manage Treks</h2>
+
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTrekModal">
+                + Add Trek
+            </button>
+        </div>
+
+        <table class="table table-bordered table-hover align-middle">
+
+            <thead class="table-dark">
+
+                <tr>
+                    <th>Trek ID</th>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Difficulty</th>
+                    <th>Duration</th>
+                    <th>Slots</th>
+                    <th>Status</th>
+                    <th>Assigned Staff</th>
+                    <th>Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for trek in treks %}
+
+                <tr>
+
+                    <td>{{ trek.public_id }}</td>
+                    <td>{{ trek.name }}</td>
+                    <td>{{ trek.location }}</td>
+                    <td>{{ trek.difficulty }}</td>
+                    <td>{{ trek.duration }} Days</td>
+                    <td>{{ trek.available_slots }}</td>
+                    <td>{{ trek.status }}</td>
+
+                    <td>
+                        {% if trek.assigned_staff %}
+
+                        <strong>{{ trek.assigned_staff.name }}</strong><br>
+
+                        <small class="text-muted">
+                            {{ trek.assigned_staff.public_id }}
+                        </small><br>
+
+                        <small class="text-muted">
+                            {{ trek.assigned_staff.email }}
+                        </small>
+
+                        {% else %}
+
+                        <span class="badge bg-secondary">
+                            Not Assigned
+                        </span>
+
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#editModal{{ trek.id }}">
+                            Edit
+                        </button>
+
+                        <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#deleteModal{{ trek.id }}">
+                            Delete
+                        </a>
+
+                    </td>
+
+                </tr>
+                <div class="modal fade" id="deleteModal{{ trek.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Delete Trek</h5>
+
+                                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                Are you sure you want to delete
+                                <strong>{{ trek.name }}</strong>?
+                            </div>
+
+                            <div class="modal-footer">
+
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Cancel
+                                </button>
+
+                                <a href="{{ url_for('admin.delete_trek', trek_id=trek.id) }}" class="btn btn-danger">
+                                    Delete
+                                </a>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="editModal{{ trek.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <form method="POST" action="{{ url_for('admin.edit_trek', trek_id=trek.id) }}">
+
+                                <div class="modal-header">
+                                    <h4>Edit Trek</h4>
+
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+
+                                    <div class="row">
+
+                                        <div class="col-md-6 mb-3">
+                                            <label>Trek Name</label>
+
+                                            <input type="text" class="form-control" name="name" value="{{ trek.name }}"
+                                                required>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label>Location</label>
+
+                                            <input type="text" class="form-control" name="location"
+                                                value="{{ trek.location }}" required>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label>Difficulty</label>
+
+                                            <select class="form-select" name="difficulty">
+
+                                                <option value="Easy" {% if trek.difficulty=="Easy" %} selected {% endif
+                                                    %}>Easy</option>
+
+                                                <option value="Moderate" {% if trek.difficulty=="Moderate" %} selected
+                                                    {% endif %}>Moderate</option>
+
+                                                <option value="Hard" {% if trek.difficulty=="Hard" %} selected {% endif
+                                                    %}>Hard</option>
+
+                                            </select>
+
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label>Duration</label>
+
+                                            <input type="number" class="form-control" name="duration"
+                                                value="{{ trek.duration }}">
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label>Available Slots</label>
+
+                                            <input type="number" class="form-control" name="available_slots"
+                                                value="{{ trek.available_slots }}">
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label>Price</label>
+
+                                            <input type="number" step="0.01" class="form-control" name="price"
+                                                value="{{ trek.price }}">
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label>Start Date</label>
+
+                                            <input type="date" class="form-control" name="start_date"
+                                                value="{{ trek.start_date }}">
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label>End Date</label>
+
+                                            <input type="date" class="form-control" name="end_date"
+                                                value="{{ trek.end_date }}">
+                                        </div>
+
+                                        <div class="col-12">
+
+                                            <label>Description</label>
+
+                                            <textarea class="form-control" rows="4"
+                                                name="description">{{ trek.description }}</textarea>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="modal-footer">
+
+                                    <button class="btn btn-primary">
+                                        Update Trek
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+
+                <tr>
+
+                    <td colspan="9" class="text-center">
+                        No treks available.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+    <div class="modal fade" id="addTrekModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+
+                <form method="POST" action="{{ url_for('admin.add_trek') }}">
+
+                    <div class="modal-header">
+                        <h4>Add Trek</h4>
+
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label>Trek Name</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label>Location</label>
+                                <input type="text" class="form-control" name="location" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label>Difficulty</label>
+
+                                <select class="form-select" name="difficulty">
+
+                                    <option>Easy</option>
+                                    <option>Moderate</option>
+                                    <option>Hard</option>
+
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label>Duration (Days)</label>
+                                <input type="number" class="form-control" name="duration" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label>Available Slots</label>
+                                <input type="number" class="form-control" name="available_slots" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label>Price</label>
+                                <input type="number" class="form-control" step="0.01" name="price" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label>Start Date</label>
+                                <input type="date" class="form-control" name="start_date" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label>End Date</label>
+                                <input type="date" class="form-control" name="end_date" required>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label>Description</label>
+
+                                <textarea class="form-control" rows="4" name="description"></textarea>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button class="btn btn-success">
+                            Add Trek
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
