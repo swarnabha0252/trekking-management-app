@@ -28,8 +28,8 @@
                     <td>{{ staff.name }}</td>
                     <td>{{ staff.email }}</td>
                     <td>
-                        <a href="{{ url_for('approve_staff', user_id=staff.id) }}" class="btn btn-success btn-sm">Approve</a>
-                        <a href="{{ url_for('reject_staff', user_id=staff.id) }}" class="btn btn-danger btn-sm">Reject</a>
+                        <a href="{{ url_for('admin.approve_staff', user_id=staff.id) }}" class="btn btn-success btn-sm">Approve</a>
+                        <a href="{{ url_for('admin.reject_staff', user_id=staff.id) }}" class="btn btn-danger btn-sm">Reject</a>
                     </td>
                 </tr>
                 {% endfor %}

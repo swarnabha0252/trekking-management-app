@@ -6,6 +6,7 @@ from routes.auth import auth
 from routes.admin import admin
 from routes.user import user
 from routes.staff import staff
+from models.booking import Booking
 from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)

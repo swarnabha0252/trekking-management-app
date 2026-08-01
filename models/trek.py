@@ -32,6 +32,12 @@ class Trek(db.Model):
         nullable=False,
         default="Pending"
     )
+    
+    booking_status = db.Column(
+    db.String(20),
+    nullable=False,
+    default="Closed"
+    )
 
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)

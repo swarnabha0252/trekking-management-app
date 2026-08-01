@@ -129,6 +129,7 @@ def add_trek():
             duration=int(request.form.get("duration")),
             available_slots=int(request.form.get("available_slots")),
             status="Pending",
+            booking_status="Closed",
             start_date=datetime.strptime(
                 request.form.get("start_date"),
                 "%Y-%m-%d"
@@ -220,6 +221,49 @@ def assign_staff(trek_id, staff_id):
         return "Not Found", 404
 
     trek.assigned_staff_id = staff.id
+    trek.status = "Open"
+    trek.booking_status = "Open"
+
+    db.session.commit()
+
+    return redirect(url_for("admin.manage_treks"))
+
+@admin.route("/admin/treks/close-booking/<int:trek_id>")
+def close_booking(trek_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    trek = db.session.get(Trek, trek_id)
+
+    if trek is None:
+        return "Trek not found.", 404
+
+    trek.booking_status = "Closed"
+
+    db.session.commit()
+
+    return redirect(url_for("admin.manage_treks"))
+
+@admin.route("/admin/treks/reopen-booking/<int:trek_id>")
+def reopen_booking(trek_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    trek = db.session.get(Trek, trek_id)
+
+    if trek is None:
+        return "Trek not found.", 404
+
+    if trek.available_slots > 0:
+        trek.booking_status = "Open"
 
     db.session.commit()
 

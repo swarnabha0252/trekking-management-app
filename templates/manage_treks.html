@@ -49,7 +49,8 @@
                     <th>Difficulty</th>
                     <th>Duration</th>
                     <th>Slots</th>
-                    <th>Status</th>
+                    <th>Trek Status</th>
+                    <th>Booking Status</th>
                     <th>Assigned Staff</th>
                     <th>Actions</th>
                 </tr>
@@ -67,8 +68,62 @@
                     <td>{{ trek.location }}</td>
                     <td>{{ trek.difficulty }}</td>
                     <td>{{ trek.duration }} Days</td>
-                    <td>{{ trek.available_slots }}</td>
-                    <td>{{ trek.status }}</td>
+
+                    <td>
+                        {% if trek.available_slots == 0 %}
+
+                        <span class="badge bg-danger">
+                            FULL
+                        </span>
+
+                        {% else %}
+
+                        {{ trek.available_slots }} Left
+
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if trek.status == "Pending" %}
+
+                        <span class="badge bg-warning text-dark">
+                            Pending
+                        </span>
+
+                        {% elif trek.status == "Open" %}
+
+                        <span class="badge bg-success">
+                            Open
+                        </span>
+
+                        {% elif trek.status == "Completed" %}
+
+                        <span class="badge bg-primary">
+                            Completed
+                        </span>
+
+                        {% else %}
+
+                        {{ trek.status }}
+
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if trek.booking_status == "Open" %}
+
+                        <span class="badge bg-success">
+                            Open
+                        </span>
+
+                        {% else %}
+
+                        <span class="badge bg-danger">
+                            Closed
+                        </span>
+
+                        {% endif %}
+                    </td>
 
                     <td>
                         {% if trek.assigned_staff %}
@@ -81,6 +136,10 @@
 
                         <small class="text-muted">
                             {{ trek.assigned_staff.email }}
+                        </small><br>
+
+                        <small class="text-muted">
+                            {{ trek.assigned_staff.contact }}
                         </small>
 
                         {% else %}
@@ -111,6 +170,22 @@
                         <button class="btn btn-info btn-sm" data-bs-toggle="modal"
                             data-bs-target="#assignStaffModal{{ trek.id }}">
                             Assign Staff
+                        </button>
+
+                        {% endif %}
+
+                        {% if trek.booking_status == "Open" %}
+
+                        <button class="btn btn-secondary btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#closeBookingModal{{ trek.id }}">
+                            Close Booking
+                        </button>
+
+                        {% else %}
+
+                        <button class="btn btn-success btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#reopenBookingModal{{ trek.id }}">
+                            Reopen Booking
                         </button>
 
                         {% endif %}
@@ -302,7 +377,9 @@
 
                                     {{ trek.assigned_staff.public_id }}<br>
 
-                                    {{ trek.assigned_staff.email }}
+                                    {{ trek.assigned_staff.email }}<br>
+
+                                    {{ trek.assigned_staff.contact }}
 
                                 </div>
 
@@ -351,6 +428,14 @@
                                                     <strong>Contact :</strong>
 
                                                     {{ staff.contact }}
+
+                                                </p>
+
+                                                <p class="mb-1">
+
+                                                    <strong>Assigned Treks :</strong>
+
+                                                    {{ staff.assigned_treks|length }}
 
                                                 </p>
 
@@ -426,11 +511,106 @@
                     </div>
 
                 </div>
+
+                <div class="modal fade" id="closeBookingModal{{ trek.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Close Booking</h5>
+
+                                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                {% if trek.available_slots > 0 %}
+
+                                There are still
+                                <strong>{{ trek.available_slots }}</strong>
+                                slots available.
+                                <br>
+                                Are you sure you want to stop accepting bookings?
+
+                                {% else %}
+
+                                Are you sure you want to stop accepting bookings for
+                                <strong>{{ trek.name }}</strong>?
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="modal-footer">
+
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Cancel
+                                </button>
+
+                                <a href="{{ url_for('admin.close_booking', trek_id=trek.id) }}"
+                                    class="btn btn-danger">
+                                    Close Booking
+                                </a>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="reopenBookingModal{{ trek.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Reopen Booking</h5>
+
+                                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                {% if trek.available_slots > 0 %}
+
+                                Reopen Booking?
+
+                                {% else %}
+
+                                Cannot reopen.
+                                <br>
+                                No slots are available.
+
+                                {% endif %}
+
+                            </div>
+
+                            <div class="modal-footer">
+
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Cancel
+                                </button>
+
+                                {% if trek.available_slots > 0 %}
+
+                                <a href="{{ url_for('admin.reopen_booking', trek_id=trek.id) }}"
+                                    class="btn btn-success">
+                                    Reopen Booking
+                                </a>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
                 {% else %}
 
                 <tr>
 
-                    <td colspan="9" class="text-center">
+                    <td colspan="10" class="text-center">
                         No treks available.
                     </td>
 
