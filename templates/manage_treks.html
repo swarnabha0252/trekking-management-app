@@ -7,64 +7,55 @@ Manage Treks
 
 <div class="list-group">
 
-    <a href="{{ url_for('admin.admin_dashboard') }}"
-        class="list-group-item list-group-item-action">
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="list-group-item list-group-item-action">
 
         Dashboard
 
     </a>
 
-    <a href="{{ url_for('admin.manage_treks') }}"
-        class="list-group-item list-group-item-action active">
+    <a href="{{ url_for('admin.manage_treks') }}" class="list-group-item list-group-item-action active">
 
         Treks
 
     </a>
 
-    <a href="{{ url_for('admin.manage_staff') }}"
-        class="list-group-item list-group-item-action">
+    <a href="{{ url_for('admin.manage_staff') }}" class="list-group-item list-group-item-action">
 
         Staff
 
     </a>
 
-    <a href="{{ url_for('admin.manage_users') }}"
-        class="list-group-item list-group-item-action">
+    <a href="{{ url_for('admin.manage_users') }}" class="list-group-item list-group-item-action">
 
         Users
 
     </a>
 
-    <a href="#"
-        class="list-group-item list-group-item-action">
+    <a href="#" class="list-group-item list-group-item-action">
 
         Bookings
 
     </a>
 
-    <a href="#"
-        class="list-group-item list-group-item-action">
+    <a href="#" class="list-group-item list-group-item-action">
 
         Search
 
     </a>
 
-    <a href="#"
-        class="list-group-item list-group-item-action">
+    <a href="#" class="list-group-item list-group-item-action">
 
         Reports
 
     </a>
 
-    <a href="#"
-        class="list-group-item list-group-item-action">
+    <a href="#" class="list-group-item list-group-item-action">
 
         Settings
 
     </a>
 
-    <a href="{{ url_for('auth.logout') }}"
-        class="list-group-item list-group-item-action text-danger">
+    <a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action text-danger">
 
         Logout
 
@@ -201,47 +192,99 @@ Manage Treks
 
                 <td>
 
-                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#editModal{{ trek.id }}">
+                    {% if trek.status == "Completed" %}
+
+                    <button class="btn btn-warning btn-sm" disabled>
+
                         Edit
+
                     </button>
 
-                    {% if trek.assigned_staff %}
+                    {% else %}
+
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#editModal{{ trek.id }}">
+
+                        Edit
+
+                    </button>
+
+                    {% endif %}
+
+                    {% if trek.status == "Completed" %}
+
+                    <button class="btn btn-secondary btn-sm" disabled>
+
+                        Staff Locked
+
+                    </button>
+
+                    {% elif trek.assigned_staff %}
 
                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                         data-bs-target="#assignStaffModal{{ trek.id }}">
+
                         Reassign Staff
+
                     </button>
 
                     {% else %}
 
                     <button class="btn btn-info btn-sm" data-bs-toggle="modal"
                         data-bs-target="#assignStaffModal{{ trek.id }}">
+
                         Assign Staff
+
                     </button>
 
                     {% endif %}
 
-                    {% if trek.booking_status == "Open" %}
+                    {% if trek.status == "Completed" %}
+
+                    <button class="btn btn-success btn-sm" disabled>
+
+                        Completed
+
+                    </button>
+
+                    {% elif trek.booking_status == "Open" %}
 
                     <button class="btn btn-secondary btn-sm" data-bs-toggle="modal"
                         data-bs-target="#closeBookingModal{{ trek.id }}">
+
                         Close Booking
+
                     </button>
 
                     {% else %}
 
                     <button class="btn btn-success btn-sm" data-bs-toggle="modal"
                         data-bs-target="#reopenBookingModal{{ trek.id }}">
+
                         Reopen Booking
+
                     </button>
 
                     {% endif %}
 
+                    {% if trek.status == "Completed" %}
+
+                    <button class="btn btn-danger btn-sm" disabled>
+
+                        Delete
+
+                    </button>
+
+                    {% else %}
+
                     <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                         data-bs-target="#deleteModal{{ trek.id }}">
+
                         Delete
+
                     </a>
+
+                    {% endif %}
 
                 </td>
 

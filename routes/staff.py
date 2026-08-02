@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash
+from extensions import db
 from models.trek import Trek
 from models.booking import Booking
-from extensions import db
 
 staff = Blueprint("staff", __name__)
+
 
 @staff.route("/staff")
 def staff_dashboard():
@@ -15,26 +16,25 @@ def staff_dashboard():
         return "Access Denied", 403
 
     assigned_treks = Trek.query.filter_by(
-    assigned_staff_id=session["user_id"],
-    status="Open"
+        assigned_staff_id=session["user_id"]
     ).all()
-    
+
     participant_counts = {}
 
     for trek in assigned_treks:
 
-        participant_counts[trek.id] = Booking.query.filter_by(
-            trek_id=trek.id,
-            status="Booked"
+        participant_counts[trek.id] = Booking.query.filter(
+            Booking.trek_id == trek.id,
+            Booking.status != "Cancelled"
         ).count()
 
     participants = {}
 
     for trek in assigned_treks:
 
-        participants[trek.id] = Booking.query.filter_by(
-            trek_id=trek.id,
-            status="Booked"
+        participants[trek.id] = Booking.query.filter(
+            Booking.trek_id == trek.id,
+            Booking.status != "Cancelled"
         ).all()
 
     return render_template(
@@ -43,6 +43,7 @@ def staff_dashboard():
         participant_counts=participant_counts,
         participants=participants
     )
+
 
 @staff.route("/staff/complete-trek/<int:trek_id>", methods=["POST"])
 def complete_trek(trek_id):
@@ -65,6 +66,10 @@ def complete_trek(trek_id):
 
     if trek.status == "Completed":
         flash("Trek is already completed.", "warning")
+        return redirect(url_for("staff.staff_dashboard"))
+
+    if trek.status != "Open":
+        flash("Only open treks can be marked as completed.", "warning")
         return redirect(url_for("staff.staff_dashboard"))
 
     trek.status = "Completed"
