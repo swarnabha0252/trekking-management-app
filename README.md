@@ -16,41 +16,59 @@ This project is being developed as part of the **Modern Application Development 
 - Session management
 - Logout functionality
 - Role-based access control (Admin, Trek Staff, User)
+- Template inheritance using Jinja2 (`base.html`)
+- Responsive interface using Bootstrap 5
+
+### Admin
+
 - Admin dashboard
+- Dashboard statistics
 - Manage treks
 - Add trek
 - Edit trek
 - Delete trek
 - Assign trek staff
 - Reassign trek staff
+- View assigned staff profile
 - Manage staff
 - Approve staff accounts
 - Reject staff accounts
+- Manage users (UI)
 - Automatic trek opening after staff assignment
-- Manual booking open/close by admin
+- Manual booking open/close
 - Automatic booking closure when all slots are filled
+
+### User
+
 - User dashboard
 - View available treks
-- Trek booking
+- Trek details
+- Book trek
 - Duplicate booking prevention
 - View booking details
 - Cancel booking
 - Automatic slot restoration after cancellation
-- My Bookings
-- Responsive interface using Bootstrap 5
-- Jinja2 templating
+- My Bookings page
+
+### Trek Staff
+
+- Staff dashboard
+- View assigned treks
+- View trek details
+- View trek participants
+- Trek completion confirmation
 
 ### Planned
 
-- Trek Staff dashboard
-- Participant management
 - Trek completion workflow
 - Booking completion workflow
+- Booking management (Admin)
 - Reports and analytics
 - Search functionality
 - Settings page
 - Profile management
 - Dashboard improvements
+- AJAX-based notifications
 
 ---
 
@@ -170,15 +188,15 @@ http://127.0.0.1:5000/login
 - Manage Users
 - User Dashboard
 - My Bookings
+- Staff Dashboard
 
 ---
 
 ## Future Enhancements
 
-- Complete Trek Staff Dashboard
-- Participant Management
-- Trek Completion Workflow
+- Complete Trek Completion Workflow
 - Booking Completion Workflow
+- Booking Management (Admin)
 - Reports & Analytics
 - Search & Filtering
 - Profile Management

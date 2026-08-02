@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
 from extensions import db
 from models.user import User
 from models.trek import Trek
@@ -43,6 +43,10 @@ app.register_blueprint(auth)
 app.register_blueprint(admin)
 app.register_blueprint(user)
 app.register_blueprint(staff)
+
+@app.route("/")
+def home():
+    return redirect(url_for("auth.login"))
 
 if __name__ == "__main__":
     app.run(debug=True)
