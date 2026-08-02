@@ -1,492 +1,538 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Treks</title>
+{% block title %}
+Manage Treks
+{% endblock %}
+{% block sidebar %}
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+<div class="list-group">
 
-<body>
+    <a href="{{ url_for('admin.admin_dashboard') }}"
+        class="list-group-item list-group-item-action">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
+        Dashboard
 
-            <a class="navbar-brand fw-bold" href="#">
-                Trekking Management Application
-            </a>
+    </a>
 
-            <div class="ms-auto">
-                <span class="navbar-text text-white">
-                    👤 {{ session["name"] }}
-                </span>
+    <a href="{{ url_for('admin.manage_treks') }}"
+        class="list-group-item list-group-item-action active">
+
+        Treks
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_staff') }}"
+        class="list-group-item list-group-item-action">
+
+        Staff
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_users') }}"
+        class="list-group-item list-group-item-action">
+
+        Users
+
+    </a>
+
+    <a href="#"
+        class="list-group-item list-group-item-action">
+
+        Bookings
+
+    </a>
+
+    <a href="#"
+        class="list-group-item list-group-item-action">
+
+        Search
+
+    </a>
+
+    <a href="#"
+        class="list-group-item list-group-item-action">
+
+        Reports
+
+    </a>
+
+    <a href="#"
+        class="list-group-item list-group-item-action">
+
+        Settings
+
+    </a>
+
+    <a href="{{ url_for('auth.logout') }}"
+        class="list-group-item list-group-item-action text-danger">
+
+        Logout
+
+    </a>
+
+</div>
+
+{% endblock %}
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Manage Treks</h2>
+
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTrekModal">
+            + Add Trek
+        </button>
+    </div>
+
+    <table class="table table-bordered table-hover align-middle">
+
+        <thead class="table-dark">
+
+            <tr>
+                <th>Trek ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Difficulty</th>
+                <th>Duration</th>
+                <th>Slots</th>
+                <th>Trek Status</th>
+                <th>Booking Status</th>
+                <th>Assigned Staff</th>
+                <th>Actions</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for trek in treks %}
+
+            <tr>
+
+                <td>{{ trek.public_id }}</td>
+                <td>{{ trek.name }}</td>
+                <td>{{ trek.location }}</td>
+                <td>{{ trek.difficulty }}</td>
+                <td>{{ trek.duration }} Days</td>
+
+                <td>
+                    {% if trek.available_slots == 0 %}
+
+                    <span class="badge bg-danger">
+                        FULL
+                    </span>
+
+                    {% else %}
+
+                    {{ trek.available_slots }} Left
+
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if trek.status == "Pending" %}
+
+                    <span class="badge bg-warning text-dark">
+                        Pending
+                    </span>
+
+                    {% elif trek.status == "Open" %}
+
+                    <span class="badge bg-success">
+                        Open
+                    </span>
+
+                    {% elif trek.status == "Completed" %}
+
+                    <span class="badge bg-primary">
+                        Completed
+                    </span>
+
+                    {% else %}
+
+                    {{ trek.status }}
+
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if trek.booking_status == "Open" %}
+
+                    <span class="badge bg-success">
+                        Open
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge bg-danger">
+                        Closed
+                    </span>
+
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if trek.assigned_staff %}
+
+                    <strong>{{ trek.assigned_staff.name }}</strong><br>
+
+                    <small class="text-muted">
+                        {{ trek.assigned_staff.public_id }}
+                    </small><br>
+
+                    <small class="text-muted">
+                        {{ trek.assigned_staff.email }}
+                    </small><br>
+
+                    <small class="text-muted">
+                        {{ trek.assigned_staff.contact }}
+                    </small>
+
+                    {% else %}
+
+                    <span class="badge bg-secondary">
+                        Not Assigned
+                    </span>
+
+                    {% endif %}
+                </td>
+
+                <td>
+
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#editModal{{ trek.id }}">
+                        Edit
+                    </button>
+
+                    {% if trek.assigned_staff %}
+
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#assignStaffModal{{ trek.id }}">
+                        Reassign Staff
+                    </button>
+
+                    {% else %}
+
+                    <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#assignStaffModal{{ trek.id }}">
+                        Assign Staff
+                    </button>
+
+                    {% endif %}
+
+                    {% if trek.booking_status == "Open" %}
+
+                    <button class="btn btn-secondary btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#closeBookingModal{{ trek.id }}">
+                        Close Booking
+                    </button>
+
+                    {% else %}
+
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#reopenBookingModal{{ trek.id }}">
+                        Reopen Booking
+                    </button>
+
+                    {% endif %}
+
+                    <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#deleteModal{{ trek.id }}">
+                        Delete
+                    </a>
+
+                </td>
+
+            </tr>
+            <div class="modal fade" id="deleteModal{{ trek.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Trek</h5>
+
+                            <button type="button" class="btn-close" data-bs-dismiss="modal">
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            Are you sure you want to delete
+                            <strong>{{ trek.name }}</strong>?
+                        </div>
+
+                        <div class="modal-footer">
+
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+
+                            <a href="{{ url_for('admin.delete_trek', trek_id=trek.id) }}" class="btn btn-danger">
+                                Delete
+                            </a>
+
+                        </div>
+
+                    </div>
+                </div>
             </div>
+            <div class="modal fade" id="editModal{{ trek.id }}" tabindex="-1">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content">
 
-        </div>
-    </nav>
-
-    <div class="container mt-5">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-
-            <h2>Manage Treks</h2>
-
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addTrekModal">
-                + Add Trek
-            </button>
-        </div>
-
-        <table class="table table-bordered table-hover align-middle">
-
-            <thead class="table-dark">
-
-                <tr>
-                    <th>Trek ID</th>
-                    <th>Name</th>
-                    <th>Location</th>
-                    <th>Difficulty</th>
-                    <th>Duration</th>
-                    <th>Slots</th>
-                    <th>Trek Status</th>
-                    <th>Booking Status</th>
-                    <th>Assigned Staff</th>
-                    <th>Actions</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                {% for trek in treks %}
-
-                <tr>
-
-                    <td>{{ trek.public_id }}</td>
-                    <td>{{ trek.name }}</td>
-                    <td>{{ trek.location }}</td>
-                    <td>{{ trek.difficulty }}</td>
-                    <td>{{ trek.duration }} Days</td>
-
-                    <td>
-                        {% if trek.available_slots == 0 %}
-
-                        <span class="badge bg-danger">
-                            FULL
-                        </span>
-
-                        {% else %}
-
-                        {{ trek.available_slots }} Left
-
-                        {% endif %}
-                    </td>
-
-                    <td>
-                        {% if trek.status == "Pending" %}
-
-                        <span class="badge bg-warning text-dark">
-                            Pending
-                        </span>
-
-                        {% elif trek.status == "Open" %}
-
-                        <span class="badge bg-success">
-                            Open
-                        </span>
-
-                        {% elif trek.status == "Completed" %}
-
-                        <span class="badge bg-primary">
-                            Completed
-                        </span>
-
-                        {% else %}
-
-                        {{ trek.status }}
-
-                        {% endif %}
-                    </td>
-
-                    <td>
-                        {% if trek.booking_status == "Open" %}
-
-                        <span class="badge bg-success">
-                            Open
-                        </span>
-
-                        {% else %}
-
-                        <span class="badge bg-danger">
-                            Closed
-                        </span>
-
-                        {% endif %}
-                    </td>
-
-                    <td>
-                        {% if trek.assigned_staff %}
-
-                        <strong>{{ trek.assigned_staff.name }}</strong><br>
-
-                        <small class="text-muted">
-                            {{ trek.assigned_staff.public_id }}
-                        </small><br>
-
-                        <small class="text-muted">
-                            {{ trek.assigned_staff.email }}
-                        </small><br>
-
-                        <small class="text-muted">
-                            {{ trek.assigned_staff.contact }}
-                        </small>
-
-                        {% else %}
-
-                        <span class="badge bg-secondary">
-                            Not Assigned
-                        </span>
-
-                        {% endif %}
-                    </td>
-
-                    <td>
-
-                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#editModal{{ trek.id }}">
-                            Edit
-                        </button>
-
-                        {% if trek.assigned_staff %}
-
-                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#assignStaffModal{{ trek.id }}">
-                            Reassign Staff
-                        </button>
-
-                        {% else %}
-
-                        <button class="btn btn-info btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#assignStaffModal{{ trek.id }}">
-                            Assign Staff
-                        </button>
-
-                        {% endif %}
-
-                        {% if trek.booking_status == "Open" %}
-
-                        <button class="btn btn-secondary btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#closeBookingModal{{ trek.id }}">
-                            Close Booking
-                        </button>
-
-                        {% else %}
-
-                        <button class="btn btn-success btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#reopenBookingModal{{ trek.id }}">
-                            Reopen Booking
-                        </button>
-
-                        {% endif %}
-
-                        <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#deleteModal{{ trek.id }}">
-                            Delete
-                        </a>
-
-                    </td>
-
-                </tr>
-                <div class="modal fade" id="deleteModal{{ trek.id }}" tabindex="-1">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
+                        <form method="POST" action="{{ url_for('admin.edit_trek', trek_id=trek.id) }}">
 
                             <div class="modal-header">
-                                <h5 class="modal-title">Delete Trek</h5>
+                                <h4>Edit Trek</h4>
 
-                                <button type="button" class="btn-close" data-bs-dismiss="modal">
-                                </button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
 
                             <div class="modal-body">
-                                Are you sure you want to delete
-                                <strong>{{ trek.name }}</strong>?
-                            </div>
 
-                            <div class="modal-footer">
+                                <div class="row">
 
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    Cancel
-                                </button>
+                                    <div class="col-md-6 mb-3">
+                                        <label>Trek Name</label>
 
-                                <a href="{{ url_for('admin.delete_trek', trek_id=trek.id) }}" class="btn btn-danger">
-                                    Delete
-                                </a>
+                                        <input type="text" class="form-control" name="name" value="{{ trek.name }}"
+                                            required>
+                                    </div>
 
-                            </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label>Location</label>
 
-                        </div>
-                    </div>
-                </div>
-                <div class="modal fade" id="editModal{{ trek.id }}" tabindex="-1">
-                    <div class="modal-dialog modal-xl modal-dialog-centered">
-                        <div class="modal-content">
+                                        <input type="text" class="form-control" name="location"
+                                            value="{{ trek.location }}" required>
+                                    </div>
 
-                            <form method="POST" action="{{ url_for('admin.edit_trek', trek_id=trek.id) }}">
+                                    <div class="col-md-6 mb-3">
+                                        <label>Difficulty</label>
 
-                                <div class="modal-header">
-                                    <h4>Edit Trek</h4>
+                                        <select class="form-select" name="difficulty">
 
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
+                                            <option value="Easy" {% if trek.difficulty=="Easy" %} selected {% endif %}>
+                                                Easy</option>
 
-                                <div class="modal-body">
+                                            <option value="Moderate" {% if trek.difficulty=="Moderate" %} selected {%
+                                                endif %}>Moderate</option>
 
-                                    <div class="row">
+                                            <option value="Hard" {% if trek.difficulty=="Hard" %} selected {% endif %}>
+                                                Hard</option>
 
-                                        <div class="col-md-6 mb-3">
-                                            <label>Trek Name</label>
+                                        </select>
 
-                                            <input type="text" class="form-control" name="name" value="{{ trek.name }}"
-                                                required>
-                                        </div>
+                                    </div>
 
-                                        <div class="col-md-6 mb-3">
-                                            <label>Location</label>
+                                    <div class="col-md-6 mb-3">
+                                        <label>Duration</label>
 
-                                            <input type="text" class="form-control" name="location"
-                                                value="{{ trek.location }}" required>
-                                        </div>
+                                        <input type="number" class="form-control" name="duration"
+                                            value="{{ trek.duration }}">
+                                    </div>
 
-                                        <div class="col-md-6 mb-3">
-                                            <label>Difficulty</label>
+                                    <div class="col-md-6 mb-3">
+                                        <label>Available Slots</label>
 
-                                            <select class="form-select" name="difficulty">
+                                        <input type="number" class="form-control" name="available_slots"
+                                            value="{{ trek.available_slots }}">
+                                    </div>
 
-                                                <option value="Easy" {% if trek.difficulty=="Easy" %} selected {% endif
-                                                    %}>Easy</option>
+                                    <div class="col-md-6 mb-3">
+                                        <label>Price</label>
 
-                                                <option value="Moderate" {% if trek.difficulty=="Moderate" %} selected
-                                                    {% endif %}>Moderate</option>
+                                        <input type="number" step="0.01" class="form-control" name="price"
+                                            value="{{ trek.price }}">
+                                    </div>
 
-                                                <option value="Hard" {% if trek.difficulty=="Hard" %} selected {% endif
-                                                    %}>Hard</option>
+                                    <div class="col-md-6 mb-3">
+                                        <label>Start Date</label>
 
-                                            </select>
+                                        <input type="date" class="form-control" name="start_date"
+                                            value="{{ trek.start_date }}">
+                                    </div>
 
-                                        </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label>End Date</label>
 
-                                        <div class="col-md-6 mb-3">
-                                            <label>Duration</label>
+                                        <input type="date" class="form-control" name="end_date"
+                                            value="{{ trek.end_date }}">
+                                    </div>
 
-                                            <input type="number" class="form-control" name="duration"
-                                                value="{{ trek.duration }}">
-                                        </div>
+                                    <div class="col-12">
 
-                                        <div class="col-md-6 mb-3">
-                                            <label>Available Slots</label>
+                                        <label>Description</label>
 
-                                            <input type="number" class="form-control" name="available_slots"
-                                                value="{{ trek.available_slots }}">
-                                        </div>
-
-                                        <div class="col-md-6 mb-3">
-                                            <label>Price</label>
-
-                                            <input type="number" step="0.01" class="form-control" name="price"
-                                                value="{{ trek.price }}">
-                                        </div>
-
-                                        <div class="col-md-6 mb-3">
-                                            <label>Start Date</label>
-
-                                            <input type="date" class="form-control" name="start_date"
-                                                value="{{ trek.start_date }}">
-                                        </div>
-
-                                        <div class="col-md-6 mb-3">
-                                            <label>End Date</label>
-
-                                            <input type="date" class="form-control" name="end_date"
-                                                value="{{ trek.end_date }}">
-                                        </div>
-
-                                        <div class="col-12">
-
-                                            <label>Description</label>
-
-                                            <textarea class="form-control" rows="4"
-                                                name="description">{{ trek.description }}</textarea>
-
-                                        </div>
+                                        <textarea class="form-control" rows="4"
+                                            name="description">{{ trek.description }}</textarea>
 
                                     </div>
 
                                 </div>
 
-                                <div class="modal-footer">
+                            </div>
 
-                                    <button class="btn btn-primary">
-                                        Update Trek
-                                    </button>
+                            <div class="modal-footer">
 
-                                </div>
-
-                            </form>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal fade" id="assignStaffModal{{ trek.id }}" tabindex="-1">
-
-                    <div class="modal-dialog modal-xl modal-dialog-centered">
-
-                        <div class="modal-content">
-
-                            <div class="modal-header">
-
-                                <h4>
-                                    Assign Staff
-                                </h4>
-
-                                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                <button class="btn btn-primary">
+                                    Update Trek
                                 </button>
 
                             </div>
 
-                            <div class="modal-body">
+                        </form>
 
-                                <h5 class="mb-4">
+                    </div>
+                </div>
+            </div>
 
-                                    Trek :
-                                    <span class="text-primary">
-                                        {{ trek.name }}
-                                    </span>
+            <div class="modal fade" id="assignStaffModal{{ trek.id }}" tabindex="-1">
 
-                                </h5>
+                <div class="modal-dialog modal-xl modal-dialog-centered">
 
-                                {% if trek.assigned_staff %}
+                    <div class="modal-content">
 
-                                <div class="alert alert-success">
+                        <div class="modal-header">
 
-                                    <strong>Currently Assigned</strong><br>
+                            <h4>
+                                Assign Staff
+                            </h4>
 
-                                    {{ trek.assigned_staff.name }}<br>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal">
+                            </button>
 
-                                    {{ trek.assigned_staff.public_id }}<br>
+                        </div>
 
-                                    {{ trek.assigned_staff.email }}<br>
+                        <div class="modal-body">
 
-                                    {{ trek.assigned_staff.contact }}
+                            <h5 class="mb-4">
 
-                                </div>
+                                Trek :
+                                <span class="text-primary">
+                                    {{ trek.name }}
+                                </span>
 
-                                {% else %}
+                            </h5>
 
-                                <div class="alert alert-warning">
+                            {% if trek.assigned_staff %}
 
-                                    No staff assigned yet.
+                            <div class="alert alert-success">
 
-                                </div>
+                                <strong>Currently Assigned</strong><br>
 
-                                {% endif %}
+                                {{ trek.assigned_staff.name }}<br>
 
-                                {% for staff in approved_staff %}
+                                {{ trek.assigned_staff.public_id }}<br>
 
-                                <div class="card shadow-sm mb-3">
+                                {{ trek.assigned_staff.email }}<br>
 
-                                    <div class="card-body">
+                                {{ trek.assigned_staff.contact }}
 
-                                        <div class="row align-items-center">
+                            </div>
 
-                                            <div class="col-md-8">
+                            {% else %}
 
-                                                <h5>
-                                                    {{ staff.name }}
-                                                </h5>
+                            <div class="alert alert-warning">
 
-                                                <p class="mb-1">
+                                No staff assigned yet.
 
-                                                    <strong>Staff ID :</strong>
+                            </div>
 
-                                                    {{ staff.public_id }}
+                            {% endif %}
 
-                                                </p>
+                            {% for staff in approved_staff %}
 
-                                                <p class="mb-1">
+                            <div class="card shadow-sm mb-3">
 
-                                                    <strong>Email :</strong>
+                                <div class="card-body">
 
-                                                    {{ staff.email }}
+                                    <div class="row align-items-center">
 
-                                                </p>
+                                        <div class="col-md-8">
 
-                                                <p class="mb-1">
+                                            <h5>
+                                                {{ staff.name }}
+                                            </h5>
 
-                                                    <strong>Contact :</strong>
+                                            <p class="mb-1">
 
-                                                    {{ staff.contact }}
+                                                <strong>Staff ID :</strong>
 
-                                                </p>
+                                                {{ staff.public_id }}
 
-                                                <p class="mb-1">
+                                            </p>
 
-                                                    <strong>Assigned Treks :</strong>
+                                            <p class="mb-1">
 
-                                                    {{ staff.assigned_treks|length }}
+                                                <strong>Email :</strong>
 
-                                                </p>
+                                                {{ staff.email }}
 
-                                                <p class="mb-0">
+                                            </p>
 
-                                                    <strong>Status :</strong>
+                                            <p class="mb-1">
 
-                                                    {% if staff.is_approved %}
+                                                <strong>Contact :</strong>
 
-                                                    <span class="badge bg-success">
-                                                        Approved
-                                                    </span>
+                                                {{ staff.contact }}
 
-                                                    {% endif %}
+                                            </p>
 
-                                                </p>
+                                            <p class="mb-1">
 
-                                            </div>
+                                                <strong>Assigned Treks :</strong>
 
-                                            <div class="col-md-4 text-end">
+                                                {{ staff.assigned_treks|length }}
 
-                                                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#staffProfileModal{{ staff.id }}">
+                                            </p>
 
-                                                    View Profile
+                                            <p class="mb-0">
 
-                                                </button>
+                                                <strong>Status :</strong>
 
-                                                {% if trek.assigned_staff_id == staff.id %}
+                                                {% if staff.is_approved %}
 
-                                                <button class="btn btn-success btn-sm" disabled>
+                                                <span class="badge bg-success">
+                                                    Approved
+                                                </span>
 
-                                                    Currently Assigned
+                                                {% endif %}
 
-                                                </button>
+                                            </p>
 
-                                                {% else %}
+                                        </div>
 
-                                                <a href="{{ url_for(
+                                        <div class="col-md-4 text-end">
+
+                                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#staffProfileModal{{ staff.id }}">
+
+                                                View Profile
+
+                                            </button>
+
+                                            {% if trek.assigned_staff_id == staff.id %}
+
+                                            <button class="btn btn-success btn-sm" disabled>
+
+                                                Currently Assigned
+
+                                            </button>
+
+                                            {% else %}
+
+                                            <a href="{{ url_for(
                                                     'admin.assign_staff',
                                                     trek_id=trek.id,
                                                     staff_id=staff.id
                                                     ) }}" class="btn btn-primary btn-sm">
 
-                                                    Assign
+                                                Assign
 
-                                                </a>
+                                            </a>
 
-                                                {% endif %}
-
-                                            </div>
+                                            {% endif %}
 
                                         </div>
 
@@ -494,391 +540,387 @@
 
                                 </div>
 
-                                {% else %}
+                            </div>
 
-                                <div class="alert alert-warning">
+                            {% else %}
 
-                                    No approved trek staff available.
+                            <div class="alert alert-warning">
 
-                                </div>
-
-                                {% endfor %}
+                                No approved trek staff available.
 
                             </div>
+
+                            {% endfor %}
 
                         </div>
 
                     </div>
 
                 </div>
-
-                <div class="modal fade" id="closeBookingModal{{ trek.id }}" tabindex="-1">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-
-                            <div class="modal-header">
-                                <h5 class="modal-title">Close Booking</h5>
-
-                                <button type="button" class="btn-close" data-bs-dismiss="modal">
-                                </button>
-                            </div>
-
-                            <div class="modal-body">
-
-                                {% if trek.available_slots > 0 %}
-
-                                There are still
-                                <strong>{{ trek.available_slots }}</strong>
-                                slots available.
-                                <br>
-                                Are you sure you want to stop accepting bookings?
-
-                                {% else %}
-
-                                Are you sure you want to stop accepting bookings for
-                                <strong>{{ trek.name }}</strong>?
-
-                                {% endif %}
-
-                            </div>
-
-                            <div class="modal-footer">
-
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    Cancel
-                                </button>
-
-                                <a href="{{ url_for('admin.close_booking', trek_id=trek.id) }}"
-                                    class="btn btn-danger">
-                                    Close Booking
-                                </a>
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal fade" id="reopenBookingModal{{ trek.id }}" tabindex="-1">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-
-                            <div class="modal-header">
-                                <h5 class="modal-title">Reopen Booking</h5>
-
-                                <button type="button" class="btn-close" data-bs-dismiss="modal">
-                                </button>
-                            </div>
-
-                            <div class="modal-body">
-
-                                {% if trek.available_slots > 0 %}
-
-                                Reopen Booking?
-
-                                {% else %}
-
-                                Cannot reopen.
-                                <br>
-                                No slots are available.
-
-                                {% endif %}
-
-                            </div>
-
-                            <div class="modal-footer">
-
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    Cancel
-                                </button>
-
-                                {% if trek.available_slots > 0 %}
-
-                                <a href="{{ url_for('admin.reopen_booking', trek_id=trek.id) }}"
-                                    class="btn btn-success">
-                                    Reopen Booking
-                                </a>
-
-                                {% endif %}
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                {% else %}
-
-                <tr>
-
-                    <td colspan="10" class="text-center">
-                        No treks available.
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-    </div>
-    <div class="modal fade" id="addTrekModal" tabindex="-1">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-
-                <form method="POST" action="{{ url_for('admin.add_trek') }}">
-
-                    <div class="modal-header">
-                        <h4>Add Trek</h4>
-
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <div class="modal-body">
-
-                        <div class="row">
-
-                            <div class="col-md-6 mb-3">
-                                <label>Trek Name</label>
-                                <input type="text" class="form-control" name="name" required>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label>Location</label>
-                                <input type="text" class="form-control" name="location" required>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label>Difficulty</label>
-
-                                <select class="form-select" name="difficulty">
-
-                                    <option>Easy</option>
-                                    <option>Moderate</option>
-                                    <option>Hard</option>
-
-                                </select>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label>Duration (Days)</label>
-                                <input type="number" class="form-control" name="duration" required>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label>Available Slots</label>
-                                <input type="number" class="form-control" name="available_slots" required>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label>Price</label>
-                                <input type="number" class="form-control" step="0.01" name="price" required>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label>Start Date</label>
-                                <input type="date" class="form-control" name="start_date" required>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label>End Date</label>
-                                <input type="date" class="form-control" name="end_date" required>
-                            </div>
-
-                            <div class="col-12 mb-3">
-                                <label>Description</label>
-
-                                <textarea class="form-control" rows="4" name="description"></textarea>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="modal-footer">
-
-                        <button class="btn btn-success">
-                            Add Trek
-                        </button>
-
-                    </div>
-
-                </form>
 
             </div>
-        </div>
-    </div>
 
+            <div class="modal fade" id="closeBookingModal{{ trek.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
 
-    {% for staff in approved_staff %}
-    <div class="modal fade" id="staffProfileModal{{ staff.id }}" tabindex="-1">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Close Booking</h5>
 
-        <div class="modal-dialog modal-dialog-centered">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal">
+                            </button>
+                        </div>
 
-            <div class="modal-content">
+                        <div class="modal-body">
 
-                <div class="modal-header">
+                            {% if trek.available_slots > 0 %}
 
-                    <h4>Trek Staff Profile</h4>
+                            There are still
+                            <strong>{{ trek.available_slots }}</strong>
+                            slots available.
+                            <br>
+                            Are you sure you want to stop accepting bookings?
 
-                    <button class="btn-close" data-bs-dismiss="modal">
-                    </button>
+                            {% else %}
 
-                </div>
+                            Are you sure you want to stop accepting bookings for
+                            <strong>{{ trek.name }}</strong>?
 
-                <div class="modal-body text-center">
+                            {% endif %}
 
-                    <div class="mb-3">
+                        </div>
 
-                        <div class="rounded-circle bg-secondary text-white
-                    d-inline-flex align-items-center justify-content-center"
-                            style="width:80px;height:80px;font-size:32px;">
+                        <div class="modal-footer">
 
-                            {{ staff.name[0] }}
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+
+                            <a href="{{ url_for('admin.close_booking', trek_id=trek.id) }}" class="btn btn-danger">
+                                Close Booking
+                            </a>
 
                         </div>
 
                     </div>
+                </div>
+            </div>
 
-                    <h4>{{ staff.name }}</h4>
+            <div class="modal fade" id="reopenBookingModal{{ trek.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
 
-                    <hr>
+                        <div class="modal-header">
+                            <h5 class="modal-title">Reopen Booking</h5>
 
-                    <p>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal">
+                            </button>
+                        </div>
 
-                        <strong>Staff ID :</strong>
+                        <div class="modal-body">
 
-                        {{ staff.public_id }}
+                            {% if trek.available_slots > 0 %}
 
-                    </p>
+                            Reopen Booking?
 
-                    <p>
+                            {% else %}
 
-                        <strong>Email :</strong>
+                            Cannot reopen.
+                            <br>
+                            No slots are available.
 
-                        {{ staff.email }}
+                            {% endif %}
 
-                    </p>
+                        </div>
 
-                    <p>
+                        <div class="modal-footer">
 
-                        <strong>Contact :</strong>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
 
-                        {{ staff.contact }}
+                            {% if trek.available_slots > 0 %}
 
-                    </p>
+                            <a href="{{ url_for('admin.reopen_booking', trek_id=trek.id) }}" class="btn btn-success">
+                                Reopen Booking
+                            </a>
 
-                    <p>
+                            {% endif %}
 
-                        <strong>Approved :</strong>
+                        </div>
 
-                        {% if staff.is_approved %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
 
-                        <span class="badge bg-success">
-                            Yes
-                        </span>
+            <tr>
 
-                        {% else %}
+                <td colspan="10" class="text-center">
+                    No treks available.
+                </td>
 
-                        <span class="badge bg-danger">
-                            No
-                        </span>
+            </tr>
 
-                        {% endif %}
+            {% endfor %}
 
-                    </p>
+        </tbody>
 
-                    <p>
+    </table>
 
-                        <strong>Blacklisted :</strong>
+</div>
+<div class="modal fade" id="addTrekModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
 
-                        {% if staff.is_blacklisted %}
+            <form method="POST" action="{{ url_for('admin.add_trek') }}">
 
-                        <span class="badge bg-danger">
+                <div class="modal-header">
+                    <h4>Add Trek</h4>
 
-                            Yes
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
 
-                        </span>
+                <div class="modal-body">
 
-                        {% else %}
+                    <div class="row">
 
-                        <span class="badge bg-success">
+                        <div class="col-md-6 mb-3">
+                            <label>Trek Name</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
 
-                            No
+                        <div class="col-md-6 mb-3">
+                            <label>Location</label>
+                            <input type="text" class="form-control" name="location" required>
+                        </div>
 
-                        </span>
+                        <div class="col-md-6 mb-3">
+                            <label>Difficulty</label>
 
-                        {% endif %}
+                            <select class="form-select" name="difficulty">
 
-                    </p>
+                                <option>Easy</option>
+                                <option>Moderate</option>
+                                <option>Hard</option>
 
-                    <p class="mb-1">
+                            </select>
+                        </div>
 
-                        <strong>Assigned Treks :</strong>
+                        <div class="col-md-6 mb-3">
+                            <label>Duration (Days)</label>
+                            <input type="number" class="form-control" name="duration" required>
+                        </div>
 
-                        {{ staff.assigned_treks|length }}
+                        <div class="col-md-6 mb-3">
+                            <label>Available Slots</label>
+                            <input type="number" class="form-control" name="available_slots" required>
+                        </div>
 
-                    </p>
+                        <div class="col-md-6 mb-3">
+                            <label>Price</label>
+                            <input type="number" class="form-control" step="0.01" name="price" required>
+                        </div>
 
-                    {% if staff.assigned_treks %}
+                        <div class="col-md-6 mb-3">
+                            <label>Start Date</label>
+                            <input type="date" class="form-control" name="start_date" required>
+                        </div>
 
-                    <ul class="list-unstyled text-start d-inline-block mb-0">
+                        <div class="col-md-6 mb-3">
+                            <label>End Date</label>
+                            <input type="date" class="form-control" name="end_date" required>
+                        </div>
 
-                        {% for assigned_trek in staff.assigned_treks %}
+                        <div class="col-12 mb-3">
+                            <label>Description</label>
 
-                        <li>&bull; {{ assigned_trek.name }}</li>
+                            <textarea class="form-control" rows="4" name="description"></textarea>
+                        </div>
 
-                        {% endfor %}
-
-                    </ul>
-
-                    {% endif %}
+                    </div>
 
                 </div>
 
                 <div class="modal-footer">
 
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">
-
-                        Close
-
+                    <button class="btn btn-success">
+                        Add Trek
                     </button>
 
                 </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+{% for staff in approved_staff %}
+<div class="modal fade" id="staffProfileModal{{ staff.id }}" tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h4>Trek Staff Profile</h4>
+
+                <button class="btn-close" data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body text-center">
+
+                <div class="mb-3">
+
+                    <div class="rounded-circle bg-secondary text-white
+                    d-inline-flex align-items-center justify-content-center"
+                        style="width:80px;height:80px;font-size:32px;">
+
+                        {{ staff.name[0] }}
+
+                    </div>
+
+                </div>
+
+                <h4>{{ staff.name }}</h4>
+
+                <hr>
+
+                <p>
+
+                    <strong>Staff ID :</strong>
+
+                    {{ staff.public_id }}
+
+                </p>
+
+                <p>
+
+                    <strong>Email :</strong>
+
+                    {{ staff.email }}
+
+                </p>
+
+                <p>
+
+                    <strong>Contact :</strong>
+
+                    {{ staff.contact }}
+
+                </p>
+
+                <p>
+
+                    <strong>Approved :</strong>
+
+                    {% if staff.is_approved %}
+
+                    <span class="badge bg-success">
+                        Yes
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge bg-danger">
+                        No
+                    </span>
+
+                    {% endif %}
+
+                </p>
+
+                <p>
+
+                    <strong>Blacklisted :</strong>
+
+                    {% if staff.is_blacklisted %}
+
+                    <span class="badge bg-danger">
+
+                        Yes
+
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge bg-success">
+
+                        No
+
+                    </span>
+
+                    {% endif %}
+
+                </p>
+
+                <p class="mb-1">
+
+                    <strong>Assigned Treks :</strong>
+
+                    {{ staff.assigned_treks|length }}
+
+                </p>
+
+                {% if staff.assigned_treks %}
+
+                <ul class="list-unstyled text-start d-inline-block mb-0">
+
+                    {% for assigned_trek in staff.assigned_treks %}
+
+                    <li>&bull; {{ assigned_trek.name }}</li>
+
+                    {% endfor %}
+
+                </ul>
+
+                {% endif %}
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
+
+                    Close
+
+                </button>
 
             </div>
 
         </div>
 
     </div>
-    {% endfor %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</div>
 
+{% endfor %}
 
-    <script>
-        document.querySelectorAll('[data-bs-target^="#staffProfileModal"]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                const parentModalEl = btn.closest('.modal');
-                if (!parentModalEl) return;
+<script>
+    document.querySelectorAll('[data-bs-target^="#staffProfileModal"]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const parentModalEl = btn.closest('.modal');
+            if (!parentModalEl) return;
 
-                const parentModal = bootstrap.Modal.getInstance(parentModalEl);
-                if (!parentModal) return;
+            const parentModal = bootstrap.Modal.getInstance(parentModalEl);
+            if (!parentModal) return;
 
-                const profileModalEl = document.querySelector(btn.getAttribute('data-bs-target'));
-                if (!profileModalEl) return;
+            const profileModalEl = document.querySelector(btn.getAttribute('data-bs-target'));
+            if (!profileModalEl) return;
 
-                parentModal.hide();
+            parentModal.hide();
 
-                profileModalEl.addEventListener('hidden.bs.modal', function reopenParent() {
-                    parentModal.show();
-                    profileModalEl.removeEventListener('hidden.bs.modal', reopenParent);
-                });
+            profileModalEl.addEventListener('hidden.bs.modal', function reopenParent() {
+                parentModal.show();
+                profileModalEl.removeEventListener('hidden.bs.modal', reopenParent);
             });
         });
-    </script>
+    });
+</script>
 
-</body>
-
-</html>
+{% endblock %}

@@ -1,90 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
+{% block title %}
+User Dashboard
+{% endblock %}
 
-    <meta charset="UTF-8">
+{% block sidebar %}
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<div class="list-group">
 
-    <title>User Dashboard</title>
+    <a href="{{ url_for('user.user_dashboard') }}"
+        class="list-group-item list-group-item-action active">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        #flash-container {
+        Dashboard
 
-            position: fixed;
+    </a>
 
-            top: 20px;
+    <a href="{{ url_for('user.my_bookings') }}"
+        class="list-group-item list-group-item-action">
 
-            right: 20px;
+        My Bookings
 
-            z-index: 9999;
+    </a>
 
-            width: 350px;
+    <a href="{{ url_for('auth.logout') }}"
+        class="list-group-item list-group-item-action text-danger">
 
-        }
+        Logout
 
-        .flash-message {
+    </a>
 
-            margin-bottom: 10px;
+</div>
 
-            transition: opacity .8s ease;
+{% endblock %}
 
-        }
-    </style>
-
-</head>
-
-<body>
-
-    <!-- Navbar -->
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-
-        <div class="container-fluid">
-
-            <a class="navbar-brand fw-bold" href="#">
-                Trekking Management Application
-            </a>
-
-            <div class="ms-auto">
-
-                <span class="navbar-text text-white me-3">
-
-                    👤 {{ session["name"] }}
-
-                </span>
-
-                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-light btn-sm">
-
-                    Logout
-
-                </a>
-
-            </div>
-
-        </div>
-
-    </nav>
-
+{% block content %}
+   
     <div class="container mt-5">
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div id="flash-container">
-            {% for category, message in messages %}
-
-            <div class="alert alert-{{ category }} flash-message shadow">
-
-                {{ message }}
-
-            </div>
-
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
 
         <h2 class="mb-4">
 
@@ -500,27 +451,5 @@
 
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+{% endblock %}
 
-        setTimeout(function () {
-
-            document.querySelectorAll(".flash-message").forEach(function (message) {
-
-                message.style.opacity = "0";
-
-                setTimeout(function () {
-
-                    message.remove();
-
-                }, 800);
-
-            });
-
-        }, 3000);
-
-    </script>
-
-</body>
-
-</html>

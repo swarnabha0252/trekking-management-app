@@ -1,10 +1,87 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Manage Users</title>
-</head>
-<body>
-    <h2>Manage Users</h2>
-    <p>Coming Soon...</p>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}
+Manage Users
+{% endblock %}
+
+{% block sidebar %}
+
+<div class="list-group">
+
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="list-group-item list-group-item-action">
+
+        Dashboard
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_treks') }}" class="list-group-item list-group-item-action">
+
+        Treks
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_staff') }}" class="list-group-item list-group-item-action">
+
+        Staff
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_users') }}" class="list-group-item list-group-item-action active">
+
+        Users
+
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+
+        Bookings
+
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+
+        Search
+
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+
+        Reports
+
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+
+        Settings
+
+    </a>
+
+    <a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action text-danger">
+
+        Logout
+
+    </a>
+
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+
+        Manage Users
+
+    </h2>
+
+    <div class="alert alert-info">
+
+        This page is under development.
+
+    </div>
+
+</div>
+
+{% endblock %}
