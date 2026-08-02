@@ -37,13 +37,15 @@ This project is being developed as part of the **Modern Application Development 
 - Automatic trek opening after staff assignment
 - Manual booking open/close
 - Automatic booking closure when all slots are filled
+- Read-only completed treks
+- Permanent booking closure after trek completion
 
 ### User
 
 - User dashboard
 - View available treks
-- Trek details
-- Book trek
+- View trek details
+- Trek booking
 - Duplicate booking prevention
 - View booking details
 - Cancel booking
@@ -56,12 +58,11 @@ This project is being developed as part of the **Modern Application Development 
 - View assigned treks
 - View trek details
 - View trek participants
-- Trek completion confirmation
+- Mark trek as completed
+- Automatic booking completion after trek completion
 
 ### Planned
 
-- Trek completion workflow
-- Booking completion workflow
 - Booking management (Admin)
 - Reports and analytics
 - Search functionality
@@ -194,8 +195,6 @@ http://127.0.0.1:5000/login
 
 ## Future Enhancements
 
-- Complete Trek Completion Workflow
-- Booking Completion Workflow
 - Booking Management (Admin)
 - Reports & Analytics
 - Search & Filtering
