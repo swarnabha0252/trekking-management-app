@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+
+{% block title %}
+Reports
+{% endblock %}
+
+{% block sidebar %}
+
+<!-- Copy the same admin sidebar -->
+<!-- Make Reports active -->
+
+{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">
+
+    Reports
+
+</h2>
+
+<h2 class="mb-4">
+
+    Reports Dashboard
+
+</h2>
+
+<div class="row">
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card shadow-sm text-center">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+
+                    Total Revenue
+
+                </h6>
+
+                <h3>
+
+                    ₹{{ revenue }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card shadow-sm text-center">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+
+                    Total Bookings
+
+                </h6>
+
+                <h3>
+
+                    {{ total_bookings }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card shadow-sm text-center">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+
+                    Active Treks
+
+                </h6>
+
+                <h3>
+
+                    {{ active_treks }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card shadow-sm text-center">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+
+                    Completed Treks
+
+                </h6>
+
+                <h3>
+
+                    {{ completed_treks }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card shadow-sm text-center">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+
+                    Cancelled Bookings
+
+                </h6>
+
+                <h3>
+
+                    {{ cancelled_bookings }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-4 mb-4">
+
+        <div class="card shadow-sm text-center">
+
+            <div class="card-body">
+
+                <h6 class="text-muted">
+
+                    Registered Users
+
+                </h6>
+
+                <h3>
+
+                    {{ total_users }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<hr class="my-5">
+
+<h3 class="mb-4">
+
+    Analytics
+
+</h3>
+
+<div class="row">
+
+    <!-- Most Popular Trek -->
+
+    <div class="col-md-6 mb-4">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h5 class="card-title">
+
+                    Most Popular Trek
+
+                </h5>
+
+                {% if most_popular_trek %}
+
+                <h4>{{ most_popular_trek.name }}</h4>
+
+                <p class="text-muted mb-0">
+
+                    {{ most_popular_trek.booking_count }} Bookings
+
+                </p>
+
+                {% else %}
+
+                <p class="text-muted">
+
+                    No data available.
+
+                </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Most Active Trek Staff -->
+
+    <div class="col-md-6 mb-4">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h5 class="card-title">
+
+                    Most Active Trek Staff
+
+                </h5>
+
+                {% if most_active_staff %}
+
+                <h4>{{ most_active_staff.name }}</h4>
+
+                <p class="text-muted mb-0">
+
+                    {{ most_active_staff.trek_count }} Assigned Treks
+
+                </p>
+
+                {% else %}
+
+                <p class="text-muted">
+
+                    No data available.
+
+                </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Most Active User -->
+
+    <div class="col-md-6 mb-4">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h5 class="card-title">
+
+                    Most Active User
+
+                </h5>
+
+                {% if most_active_user %}
+
+                <h4>{{ most_active_user.name }}</h4>
+
+                <p class="text-muted mb-0">
+
+                    {{ most_active_user.booking_count }} Bookings
+
+                </p>
+
+                {% else %}
+
+                <p class="text-muted">
+
+                    No data available.
+
+                </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Booking Status -->
+
+    <div class="col-md-6 mb-4">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-body">
+
+                <h5 class="card-title">
+
+                    Booking Status
+
+                </h5>
+
+                <table class="table table-borderless mb-0">
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Booked</td>
+
+                            <td class="text-end">
+
+                                {{ booked_count }}
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Completed</td>
+
+                            <td class="text-end">
+
+                                {{ completed_booking_count }}
+
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Cancelled</td>
+
+                            <td class="text-end">
+
+                                {{ cancelled_booking_count }}
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

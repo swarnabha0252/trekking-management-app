@@ -4,7 +4,7 @@ from models.user import User
 from models.trek import Trek
 from datetime import datetime
 from models.booking import Booking
-from sqlalchemy import or_
+from sqlalchemy import or_, func
 
 admin = Blueprint("admin", __name__)
 
@@ -371,4 +371,106 @@ def search():
         users=users,
         staff=staff,
         bookings=bookings
+    )
+
+@admin.route("/admin/reports")
+def reports():
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    total_bookings = Booking.query.count()
+
+    active_treks = Trek.query.filter_by(
+        status="Open"
+    ).count()
+
+    completed_treks = Trek.query.filter_by(
+        status="Completed"
+    ).count()
+
+    cancelled_bookings = Booking.query.filter_by(
+        status="Cancelled"
+    ).count()
+
+    total_users = User.query.filter_by(
+        role="user"
+    ).count()
+
+    revenue = db.session.query(
+        db.func.sum(Trek.price)
+    ).join(
+        Booking,
+        Booking.trek_id == Trek.id
+    ).filter(
+        Booking.status.in_(["Booked", "Completed"])
+    ).scalar()
+
+    if revenue is None:
+        revenue = 0
+
+    most_popular_trek = (
+    db.session.query(
+        Trek.name,
+        func.count(Booking.id).label("booking_count")
+    )
+    .join(Booking)
+    .group_by(Trek.id)
+    .order_by(func.count(Booking.id).desc())
+    .first()
+    )
+
+    most_active_user = (
+    db.session.query(
+        User.name,
+        func.count(Booking.id).label("booking_count")
+    )
+    .join(Booking)
+    .filter(User.role == "user")
+    .group_by(User.id)
+    .order_by(func.count(Booking.id).desc())
+    .first()
+    )
+
+    most_active_staff = (
+    db.session.query(
+        User.name,
+        func.count(Trek.id).label("trek_count")
+    )
+    .join(Trek, Trek.assigned_staff_id == User.id)
+    .filter(User.role == "trek_staff")
+    .group_by(User.id)
+    .order_by(func.count(Trek.id).desc())
+    .first()
+    )
+
+    booked_count = Booking.query.filter_by(
+    status="Booked"
+    ).count()
+
+    completed_booking_count = Booking.query.filter_by(
+        status="Completed"
+    ).count()
+
+    cancelled_booking_count = Booking.query.filter_by(
+        status="Cancelled"
+    ).count()
+
+    return render_template(
+        "reports.html",
+        revenue=revenue,
+        total_bookings=total_bookings,
+        active_treks=active_treks,
+        completed_treks=completed_treks,
+        cancelled_bookings=cancelled_bookings,
+        total_users=total_users,
+        most_popular_trek=most_popular_trek,
+        most_active_user=most_active_user,
+        most_active_staff=most_active_staff,
+        booked_count=booked_count,
+        completed_booking_count=completed_booking_count,
+        cancelled_booking_count=cancelled_booking_count
     )

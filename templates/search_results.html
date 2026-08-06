@@ -32,8 +32,10 @@ Search
         Search
     </a>
 
-    <a href="#" class="list-group-item list-group-item-action">
+    <a href="{{ url_for('admin.reports') }}" class="list-group-item list-group-item-action">
+
         Reports
+
     </a>
 
     <a href="#" class="list-group-item list-group-item-action">
@@ -58,11 +60,7 @@ Search
 
     <div class="input-group mb-4">
 
-        <input
-            type="text"
-            class="form-control"
-            name="q"
-            placeholder="Search users, treks, staff or bookings..."
+        <input type="text" class="form-control" name="q" placeholder="Search users, treks, staff or bookings..."
             value="{{ query }}">
 
         <button class="btn btn-primary" type="submit">

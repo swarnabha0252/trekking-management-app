@@ -33,7 +33,17 @@ This project is being developed as part of the **Modern Application Development 
 - Manage staff
 - Approve staff accounts
 - Reject staff accounts
-- Manage users (UI)
+- Manage users
+- Manage bookings
+- View booking details
+- Cancel bookings
+- Search users, trek staff, treks, and bookings
+- Reports dashboard
+- Revenue analytics
+- Booking statistics
+- Most popular trek analytics
+- Most active user analytics
+- Most active trek staff analytics
 - Automatic trek opening after staff assignment
 - Manual booking open/close
 - Automatic booking closure when all slots are filled
@@ -63,13 +73,13 @@ This project is being developed as part of the **Modern Application Development 
 
 ### Planned
 
-- Booking management (Admin)
-- Reports and analytics
-- Search functionality
-- Settings page
 - Profile management
+- Settings page
 - Dashboard improvements
 - AJAX-based notifications
+- Email notifications
+- Pagination for large datasets
+- Export reports as PDF/CSV
 
 ---
 
@@ -114,11 +124,14 @@ trekking-management-app/
     ├── admin_dashboard.html
     ├── base.html
     ├── login.html
+    ├── manage_bookings.html
     ├── manage_staff.html
     ├── manage_treks.html
     ├── manage_users.html
     ├── my_bookings.html
     ├── register.html
+    ├── reports.html
+    ├── search_results.html
     ├── staff_dashboard.html
     └── user_dashboard.html
 ```
@@ -179,6 +192,46 @@ http://127.0.0.1:5000/login
 
 ---
 
+## User Roles
+
+### Admin
+
+- Manage treks
+- Manage users
+- Manage trek staff
+- Manage bookings
+- Assign and reassign trek staff
+- Open and close trek bookings
+- View reports and analytics
+- Search across the system
+
+### Trek Staff
+
+- View assigned treks
+- View participants
+- Mark assigned treks as completed
+
+### User
+
+- Browse available treks
+- Book treks
+- View booking history
+- Cancel active bookings
+
+---
+
+## Business Rules
+
+- Only approved trek staff can be assigned to treks.
+- A trek automatically opens after a guide is assigned.
+- Bookings close automatically when all available slots are filled.
+- Users cannot book the same trek more than once.
+- Cancelling a booking restores one available slot.
+- Completed treks become read-only.
+- Completing a trek automatically marks all active bookings as completed.
+
+---
+
 ## Screens Implemented
 
 - Login Page
@@ -187,6 +240,9 @@ http://127.0.0.1:5000/login
 - Manage Treks
 - Manage Staff
 - Manage Users
+- Manage Bookings
+- Reports Dashboard
+- Search Results
 - User Dashboard
 - My Bookings
 - Staff Dashboard
@@ -195,12 +251,16 @@ http://127.0.0.1:5000/login
 
 ## Future Enhancements
 
-- Booking Management (Admin)
-- Reports & Analytics
-- Search & Filtering
 - Profile Management
-- Dashboard Improvements
+- Settings Page
+- Email Notifications
 - AJAX-based Notifications
+- Pagination
+- Advanced Filters
+- Export Reports (PDF/CSV)
+- Image Upload for Treks
+- Trek Reviews and Ratings
+- Payment Gateway Integration
 
 ---
 
