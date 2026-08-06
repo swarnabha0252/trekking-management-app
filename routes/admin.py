@@ -3,6 +3,7 @@ from extensions import db
 from models.user import User
 from models.trek import Trek
 from datetime import datetime
+from models.booking import Booking
 
 admin = Blueprint("admin", __name__)
 
@@ -268,3 +269,50 @@ def reopen_booking(trek_id):
     db.session.commit()
 
     return redirect(url_for("admin.manage_treks"))
+
+@admin.route("/admin/bookings")
+def manage_bookings():
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    bookings = Booking.query.order_by(
+        Booking.booking_date.desc()
+    ).all()
+
+    return render_template(
+        "manage_bookings.html",
+        bookings=bookings
+    )
+
+@admin.route("/admin/cancel-booking/<int:booking_id>", methods=["POST"])
+def cancel_booking(booking_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    booking = db.session.get(Booking, booking_id)
+
+    if booking is None:
+        flash("Booking not found.", "danger")
+        return redirect(url_for("admin.manage_bookings"))
+
+    if booking.status != "Booked":
+        flash("Only active bookings can be cancelled.", "warning")
+        return redirect(url_for("admin.manage_bookings"))
+
+    booking.status = "Cancelled"
+
+    booking.trek.available_slots += 1
+
+    db.session.commit()
+
+    flash("Booking cancelled successfully!", "success")
+
+    return redirect(url_for("admin.manage_bookings"))

@@ -190,26 +190,14 @@ Manage Treks
                     {% endif %}
                 </td>
 
-                <td>
+                <td class="text-nowrap">
 
-                    {% if trek.status == "Completed" %}
+                    <button class="btn btn-outline-warning btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#editModal{{ trek.id }}" title="Edit Trek">
 
-                    <button class="btn btn-warning btn-sm" disabled>
-
-                        Edit
-
-                    </button>
-
-                    {% else %}
-
-                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#editModal{{ trek.id }}">
-
-                        Edit
+                        <i class="bi bi-pencil-square"></i>
 
                     </button>
-
-                    {% endif %}
 
                     {% if trek.status == "Completed" %}
 
@@ -267,24 +255,12 @@ Manage Treks
 
                     {% endif %}
 
-                    {% if trek.status == "Completed" %}
+                    <a href="#" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#deleteModal{{ trek.id }}" title="Delete Trek">
 
-                    <button class="btn btn-danger btn-sm" disabled>
-
-                        Delete
-
-                    </button>
-
-                    {% else %}
-
-                    <a href="#" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#deleteModal{{ trek.id }}">
-
-                        Delete
+                        <i class="bi bi-trash"></i>
 
                     </a>
-
-                    {% endif %}
 
                 </td>
 

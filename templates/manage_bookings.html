@@ -1,0 +1,386 @@
+{% extends "base.html" %}
+
+{% block title %}
+Manage Bookings
+{% endblock %}
+
+{% block sidebar %}
+
+<div class="list-group">
+
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="list-group-item list-group-item-action">
+        Dashboard
+    </a>
+
+    <a href="{{ url_for('admin.manage_treks') }}" class="list-group-item list-group-item-action">
+        Treks
+    </a>
+
+    <a href="{{ url_for('admin.manage_staff') }}" class="list-group-item list-group-item-action">
+        Staff
+    </a>
+
+    <a href="{{ url_for('admin.manage_users') }}" class="list-group-item list-group-item-action">
+        Users
+    </a>
+
+    <a href="{{ url_for('admin.manage_bookings') }}" class="list-group-item list-group-item-action active">
+        Bookings
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+        Search
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+        Reports
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+        Settings
+    </a>
+
+    <a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action text-danger">
+        Logout
+    </a>
+
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Manage Bookings
+</h2>
+
+<table class="table table-bordered table-hover">
+
+    <thead class="table-dark">
+
+        <tr>
+
+            <th>Booking ID</th>
+            <th>User</th>
+            <th>Trek</th>
+            <th>Guide</th>
+            <th>Booking Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for booking in bookings %}
+
+        <tr>
+
+            <td>{{ booking.public_id }}</td>
+
+            <td>{{ booking.user.name }}</td>
+
+            <td>{{ booking.trek.name }}</td>
+
+            <td>
+
+                {% if booking.trek.assigned_staff %}
+
+                    {{ booking.trek.assigned_staff.name }}
+
+                {% else %}
+
+                    Not Assigned
+
+                {% endif %}
+
+            </td>
+
+            <td>
+
+                {{ booking.booking_date.strftime("%d %b %Y") }}
+
+            </td>
+
+            <td>
+
+                {% if booking.status == "Booked" %}
+
+                    <span class="badge bg-success">
+                        Booked
+                    </span>
+
+                {% elif booking.status == "Completed" %}
+
+                    <span class="badge bg-primary">
+                        Completed
+                    </span>
+
+                {% else %}
+
+                    <span class="badge bg-danger">
+                        Cancelled
+                    </span>
+
+                {% endif %}
+
+            </td>
+
+            <td class="text-nowrap">
+
+                <button
+                    class="btn btn-outline-primary btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#detailsModal{{ booking.id }}"
+                    title="View Booking">
+
+                    <i class="bi bi-eye"></i>
+
+                </button>
+
+                {% if booking.status == "Booked" %}
+
+                <button
+                    class="btn btn-outline-danger btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#cancelModal{{ booking.id }}"
+                    title="Cancel Booking">
+
+                    <i class="bi bi-x-circle"></i>
+
+                </button>
+
+                {% endif %}
+
+            </td>
+
+        </tr>
+
+        {% else %}
+
+        <tr>
+
+            <td colspan="7" class="text-center">
+
+                No bookings found.
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+<!-- Booking Modals -->
+
+{% for booking in bookings %}
+
+<!-- Details Modal -->
+
+<div class="modal fade" id="detailsModal{{ booking.id }}" tabindex="-1">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    Booking Details
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <p><strong>Booking ID:</strong> {{ booking.public_id }}</p>
+
+                        <p><strong>User:</strong> {{ booking.user.name }}</p>
+
+                        <p><strong>Email:</strong> {{ booking.user.email }}</p>
+
+                        <p><strong>Trek:</strong> {{ booking.trek.name }}</p>
+
+                        <p><strong>Location:</strong> {{ booking.trek.location }}</p>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <p>
+
+                            <strong>Guide:</strong>
+
+                            {% if booking.trek.assigned_staff %}
+
+                                {{ booking.trek.assigned_staff.name }}
+
+                            {% else %}
+
+                                Not Assigned
+
+                            {% endif %}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Booking Date:</strong>
+
+                            {{ booking.booking_date.strftime("%d %b %Y") }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Status:</strong>
+
+                            {{ booking.status }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Price:</strong>
+
+                            ₹{{ booking.trek.price }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Duration:</strong>
+
+                            {{ booking.trek.duration }} Days
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Close
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Cancel Modal -->
+
+{% if booking.status == "Booked" %}
+
+<div class="modal fade" id="cancelModal{{ booking.id }}" tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    Cancel Booking
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                Are you sure you want to cancel the booking for
+
+                <strong>{{ booking.user.name }}</strong>?
+
+                <hr>
+
+                <div class="alert alert-warning mb-0">
+
+                    This action will:
+
+                    <ul class="mb-0 mt-2">
+
+                        <li>Mark the booking as <strong>Cancelled</strong>.</li>
+
+                        <li>Restore one available slot in the trek.</li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Close
+
+                </button>
+
+                <form method="POST"
+                      action="{{ url_for('admin.cancel_booking', booking_id=booking.id) }}">
+
+                    <button
+                        type="submit"
+                        class="btn btn-danger">
+
+                        Confirm Cancellation
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endfor %}
+
+{% endblock %}
