@@ -28,8 +28,10 @@ Manage Bookings
         Bookings
     </a>
 
-    <a href="#" class="list-group-item list-group-item-action">
+    <a href="{{ url_for('admin.search') }}" class="list-group-item list-group-item-action">
+
         Search
+
     </a>
 
     <a href="#" class="list-group-item list-group-item-action">
@@ -88,11 +90,11 @@ Manage Bookings
 
                 {% if booking.trek.assigned_staff %}
 
-                    {{ booking.trek.assigned_staff.name }}
+                {{ booking.trek.assigned_staff.name }}
 
                 {% else %}
 
-                    Not Assigned
+                Not Assigned
 
                 {% endif %}
 
@@ -108,21 +110,21 @@ Manage Bookings
 
                 {% if booking.status == "Booked" %}
 
-                    <span class="badge bg-success">
-                        Booked
-                    </span>
+                <span class="badge bg-success">
+                    Booked
+                </span>
 
                 {% elif booking.status == "Completed" %}
 
-                    <span class="badge bg-primary">
-                        Completed
-                    </span>
+                <span class="badge bg-primary">
+                    Completed
+                </span>
 
                 {% else %}
 
-                    <span class="badge bg-danger">
-                        Cancelled
-                    </span>
+                <span class="badge bg-danger">
+                    Cancelled
+                </span>
 
                 {% endif %}
 
@@ -130,11 +132,8 @@ Manage Bookings
 
             <td class="text-nowrap">
 
-                <button
-                    class="btn btn-outline-primary btn-sm"
-                    data-bs-toggle="modal"
-                    data-bs-target="#detailsModal{{ booking.id }}"
-                    title="View Booking">
+                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#detailsModal{{ booking.id }}" title="View Booking">
 
                     <i class="bi bi-eye"></i>
 
@@ -142,11 +141,8 @@ Manage Bookings
 
                 {% if booking.status == "Booked" %}
 
-                <button
-                    class="btn btn-outline-danger btn-sm"
-                    data-bs-toggle="modal"
-                    data-bs-target="#cancelModal{{ booking.id }}"
-                    title="Cancel Booking">
+                <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#cancelModal{{ booking.id }}" title="Cancel Booking">
 
                     <i class="bi bi-x-circle"></i>
 
@@ -196,10 +192,7 @@ Manage Bookings
 
                 </h5>
 
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal">
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
 
                 </button>
 
@@ -231,11 +224,11 @@ Manage Bookings
 
                             {% if booking.trek.assigned_staff %}
 
-                                {{ booking.trek.assigned_staff.name }}
+                            {{ booking.trek.assigned_staff.name }}
 
                             {% else %}
 
-                                Not Assigned
+                            Not Assigned
 
                             {% endif %}
 
@@ -281,9 +274,7 @@ Manage Bookings
 
             <div class="modal-footer">
 
-                <button
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
 
                     Close
 
@@ -315,10 +306,7 @@ Manage Bookings
 
                 </h5>
 
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal">
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
 
                 </button>
 
@@ -350,20 +338,15 @@ Manage Bookings
 
             <div class="modal-footer">
 
-                <button
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
 
                     Close
 
                 </button>
 
-                <form method="POST"
-                      action="{{ url_for('admin.cancel_booking', booking_id=booking.id) }}">
+                <form method="POST" action="{{ url_for('admin.cancel_booking', booking_id=booking.id) }}">
 
-                    <button
-                        type="submit"
-                        class="btn btn-danger">
+                    <button type="submit" class="btn btn-danger">
 
                         Confirm Cancellation
 

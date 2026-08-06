@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, session, request
+from flask import Blueprint, render_template, redirect, url_for, session, request, flash
 from extensions import db
 from models.user import User
 from models.trek import Trek
 from datetime import datetime
 from models.booking import Booking
+from sqlalchemy import or_
 
 admin = Blueprint("admin", __name__)
 
@@ -316,3 +317,58 @@ def cancel_booking(booking_id):
     flash("Booking cancelled successfully!", "success")
 
     return redirect(url_for("admin.manage_bookings"))
+
+@admin.route("/admin/search")
+def search():
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    query = request.args.get("q", "").strip()
+
+    treks = []
+    users = []
+    staff = []
+    bookings = []
+
+    if query:
+
+        treks = Trek.query.filter(
+            or_(
+                Trek.name.ilike(f"%{query}%"),
+                Trek.location.ilike(f"%{query}%"),
+                Trek.public_id.ilike(f"%{query}%")
+            )
+        ).all()
+
+        users = User.query.filter(
+            User.role == "user",
+            or_(
+                User.name.ilike(f"%{query}%"),
+                User.email.ilike(f"%{query}%")
+            )
+        ).all()
+
+        staff = User.query.filter(
+            User.role == "trek_staff",
+            or_(
+                User.name.ilike(f"%{query}%"),
+                User.email.ilike(f"%{query}%")
+            )
+        ).all()
+
+        bookings = Booking.query.filter(
+            Booking.public_id.ilike(f"%{query}%")
+        ).all()
+
+    return render_template(
+        "search_results.html",
+        query=query,
+        treks=treks,
+        users=users,
+        staff=staff,
+        bookings=bookings
+    )

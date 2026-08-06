@@ -5,13 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-        crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <title>{% block title %}Trekking Management System{% endblock %}</title>
 
@@ -54,27 +51,23 @@
 
                     {% with messages = get_flashed_messages(with_categories=true) %}
 
-                        {% if messages %}
+                    {% if messages %}
 
-                            {% for category, message in messages %}
+                    {% for category, message in messages %}
 
-                                <div class="alert alert-{{ category }} alert-dismissible fade show"
-                                    role="alert">
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
 
-                                    {{ message }}
+                        {{ message }}
 
-                                    <button type="button"
-                                        class="btn-close"
-                                        data-bs-dismiss="alert"
-                                        aria-label="Close">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
 
-                                    </button>
+                        </button>
 
-                                </div>
+                    </div>
 
-                            {% endfor %}
+                    {% endfor %}
 
-                        {% endif %}
+                    {% endif %}
 
                     {% endwith %}
 
@@ -90,7 +83,7 @@
         </div>
 
     </div>
-
+    
     <footer class="text-center py-3 bg-light">
 
         <p class="mb-0">
@@ -102,9 +95,8 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous">
-    </script>
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+        </script>
 
     <script>
 

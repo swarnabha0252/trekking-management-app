@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}
+Search
+{% endblock %}
+
+{% block sidebar %}
+
+<div class="list-group">
+
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="list-group-item list-group-item-action">
+        Dashboard
+    </a>
+
+    <a href="{{ url_for('admin.manage_treks') }}" class="list-group-item list-group-item-action">
+        Treks
+    </a>
+
+    <a href="{{ url_for('admin.manage_staff') }}" class="list-group-item list-group-item-action">
+        Staff
+    </a>
+
+    <a href="{{ url_for('admin.manage_users') }}" class="list-group-item list-group-item-action">
+        Users
+    </a>
+
+    <a href="{{ url_for('admin.manage_bookings') }}" class="list-group-item list-group-item-action">
+        Bookings
+    </a>
+
+    <a href="{{ url_for('admin.search') }}" class="list-group-item list-group-item-action active">
+        Search
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+        Reports
+    </a>
+
+    <a href="#" class="list-group-item list-group-item-action">
+        Settings
+    </a>
+
+    <a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action text-danger">
+        Logout
+    </a>
+
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Search
+</h2>
+
+<form method="GET" action="{{ url_for('admin.search') }}">
+
+    <div class="input-group mb-4">
+
+        <input
+            type="text"
+            class="form-control"
+            name="q"
+            placeholder="Search users, treks, staff or bookings..."
+            value="{{ query }}">
+
+        <button class="btn btn-primary" type="submit">
+
+            <i class="bi bi-search"></i>
+
+            Search
+
+        </button>
+
+    </div>
+
+</form>
+
+{% if query %}
+
+<div class="alert alert-secondary">
+
+    Showing results for
+    <strong>"{{ query }}"</strong>
+
+</div>
+
+{% if not treks and not users and not staff and not bookings %}
+
+<div class="alert alert-warning text-center">
+
+    No results found.
+
+</div>
+
+{% endif %}
+
+{% if treks %}
+
+<div class="card mb-4">
+
+    <div class="card-header">
+
+        Treks ({{ treks|length }})
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered table-hover">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Location</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for trek in treks %}
+
+                <tr>
+
+                    <td>{{ trek.public_id }}</td>
+
+                    <td>{{ trek.name }}</td>
+
+                    <td>{{ trek.location }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% if users %}
+
+<div class="card mb-4">
+
+    <div class="card-header">
+
+        Users ({{ users|length }})
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered table-hover">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for user in users %}
+
+                <tr>
+
+                    <td>{{ user.public_id }}</td>
+
+                    <td>{{ user.name }}</td>
+
+                    <td>{{ user.email }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% if staff %}
+
+<div class="card mb-4">
+
+    <div class="card-header">
+
+        Trek Staff ({{ staff|length }})
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered table-hover">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for member in staff %}
+
+                <tr>
+
+                    <td>{{ member.public_id }}</td>
+
+                    <td>{{ member.name }}</td>
+
+                    <td>{{ member.email }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% if bookings %}
+
+<div class="card mb-4">
+
+    <div class="card-header">
+
+        Bookings ({{ bookings|length }})
+
+    </div>
+
+    <div class="card-body">
+
+        <table class="table table-bordered table-hover">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>Booking ID</th>
+                    <th>User</th>
+                    <th>Trek</th>
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for booking in bookings %}
+
+                <tr>
+
+                    <td>{{ booking.public_id }}</td>
+
+                    <td>{{ booking.user.name }}</td>
+
+                    <td>{{ booking.trek.name }}</td>
+
+                    <td>
+
+                        {% if booking.status == "Booked" %}
+
+                        <span class="badge bg-success">
+                            Booked
+                        </span>
+
+                        {% elif booking.status == "Completed" %}
+
+                        <span class="badge bg-primary">
+                            Completed
+                        </span>
+
+                        {% else %}
+
+                        <span class="badge bg-danger">
+                            Cancelled
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endif %}
+
+<a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-outline-primary">
+
+    ← Back to Dashboard
+
+</a>
+
+{% endblock %}
