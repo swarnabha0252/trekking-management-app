@@ -5,4 +5,5 @@ instance/
 *.db
 
 venv/
+.venv/
 .env

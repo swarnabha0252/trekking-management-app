@@ -23,9 +23,9 @@ with app.app_context():
 
     if admin_user is None:
         first_admin = User(
-            name="Admin",
-            email="admin@example.com",
-            password=generate_password_hash("admin123"),
+            name="admin",
+            email="admin@trekking.com",
+            password=generate_password_hash("Admin@123"),
             role="admin",
             is_approved=True,
             is_blacklisted=False
@@ -49,4 +49,4 @@ def home():
     return redirect(url_for("auth.login"))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
