@@ -61,6 +61,9 @@ This project is being developed as part of the **Modern Application Development 
 - Cancel booking
 - Automatic slot restoration after cancellation
 - My Bookings page
+- Profile management
+- Edit profile details
+- Add phone number
 
 ### Trek Staff
 
@@ -73,7 +76,6 @@ This project is being developed as part of the **Modern Application Development 
 
 ### Planned
 
-- Profile management
 - Settings page
 - Dashboard improvements
 - AJAX-based notifications
@@ -129,9 +131,11 @@ trekking-management-app/
     ├── manage_treks.html
     ├── manage_users.html
     ├── my_bookings.html
+    ├── profile.html
     ├── register.html
     ├── reports.html
     ├── search_results.html
+    ├── settings.html
     ├── staff_dashboard.html
     └── user_dashboard.html
 ```

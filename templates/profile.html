@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Profile
+{% endblock %}
+
+{% block sidebar %}
+
+<div class="list-group">
+
+    <a
+        href="{{ url_for('user.user_dashboard') }}"
+        class="list-group-item list-group-item-action">
+
+        Dashboard
+
+    </a>
+
+    <a
+        href="{{ url_for('user.my_bookings') }}"
+        class="list-group-item list-group-item-action">
+
+        My Bookings
+
+    </a>
+
+    <a
+        href="{{ url_for('user.profile') }}"
+        class="list-group-item list-group-item-action active">
+
+        My Profile
+
+    </a>
+
+    <button
+        type="button"
+        class="list-group-item list-group-item-action sidebar-logout"
+        data-bs-toggle="modal"
+        data-bs-target="#logoutModal">
+
+        <i class="bi bi-box-arrow-right me-2"></i>
+
+        Logout
+
+    </button>
+
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-dark text-white">
+
+                    <h4 class="mb-0">
+
+                        My Profile
+
+                    </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row mb-4">
+
+                        <div class="col-md-6">
+
+                            <p class="mb-1 text-muted">
+
+                                User ID
+
+                            </p>
+
+                            <h6>
+
+                                {{ user.public_id }}
+
+                            </h6>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <p class="mb-1 text-muted">
+
+                                Role
+
+                            </p>
+
+                            <h6>
+
+                                {{ user.role|replace("_", " ")|title }}
+
+                            </h6>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-4">
+
+                        <div class="col-md-6">
+
+                            <p class="mb-1 text-muted">
+
+                                Account Status
+
+                            </p>
+
+                            {% if user.is_blacklisted %}
+
+                            <span class="badge bg-danger">
+
+                                Blocked
+
+                            </span>
+
+                            {% elif user.is_approved %}
+
+                            <span class="badge bg-success">
+
+                                Active
+
+                            </span>
+
+                            {% else %}
+
+                            <span class="badge bg-warning text-dark">
+
+                                Pending Approval
+
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <p class="mb-1 text-muted">
+
+                                Member Since
+
+                            </p>
+
+                            <h6>
+
+                                {{ user.created_at.strftime("%d %B %Y") if user.created_at else "N/A" }}
+
+                            </h6>
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('user.profile') }}">
+
+                        <div class="mb-3">
+
+                            <label
+                                for="name"
+                                class="form-label">
+
+                                Full Name
+
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="name"
+                                name="name"
+                                value="{{ user.name }}"
+                                maxlength="100"
+                                required>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label
+                                for="email"
+                                class="form-label">
+
+                                Email Address
+
+                            </label>
+
+                            <input
+                                type="email"
+                                class="form-control"
+                                id="email"
+                                name="email"
+                                value="{{ user.email }}"
+                                maxlength="100"
+                                required>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label
+                                for="phone"
+                                class="form-label">
+
+                                Phone Number
+
+                            </label>
+
+                            <input
+                                type="tel"
+                                class="form-control"
+                                id="phone"
+                                name="phone"
+                                value="{{ user.phone or '' }}"
+                                maxlength="20"
+                                placeholder="Enter your phone number">
+
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <a
+                                href="{{ url_for('user.user_dashboard') }}"
+                                class="btn btn-secondary">
+
+                                Cancel
+
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                <i class="bi bi-check-lg me-1"></i>
+
+                                Save Changes
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

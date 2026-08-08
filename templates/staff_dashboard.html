@@ -8,379 +8,858 @@ Staff Dashboard
 
 <div class="list-group">
 
-    <a href="{{ url_for('staff.staff_dashboard') }}"
-       class="list-group-item list-group-item-action active">
+    <a
+        href="{{ url_for('staff.staff_dashboard') }}"
+        class="list-group-item list-group-item-action active">
+
+        <i class="bi bi-speedometer2 me-2"></i>
 
         Dashboard
 
     </a>
 
-    <a href="{{ url_for('auth.logout') }}"
-       class="list-group-item list-group-item-action text-danger">
+    <button
+        type="button"
+        class="list-group-item list-group-item-action sidebar-logout text-danger"
+        data-bs-toggle="modal"
+        data-bs-target="#logoutModal">
+
+        <i class="bi bi-box-arrow-right me-2"></i>
 
         Logout
 
-    </a>
+    </button>
 
 </div>
 
 {% endblock %}
 
 {% block content %}
-    <div class="container mt-5">
 
-        <h2>
+<div class="container-fluid">
 
-            Welcome,
-            {{ session["name"] }}
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-        </h2>
+        <div>
 
-        <hr>
+            <h2 class="mb-1">
 
-        {% if assigned_treks %}
+                Welcome, {{ session["name"] }}
 
-        <table class="table table-bordered table-hover mt-4">
+            </h2>
 
-            <thead class="table-dark">
+            <p class="text-muted mb-0">
 
-                <tr>
+                Manage your assigned treks and participants.
 
-                    <th>ID</th>
-                    <th>Trek</th>
-                    <th>Location</th>
-                    <th>Dates</th>
-                    <th>Participants</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+            </p>
 
-                </tr>
+        </div>
 
-            </thead>
+        <div>
 
-            <tbody>
+            <span class="badge bg-primary fs-6">
 
-                {% for trek in assigned_treks %}
+                Trek Staff
 
-                <tr>
+            </span>
 
-                    <td>{{ trek.public_id }}</td>
+        </div>
 
-                    <td>{{ trek.name }}</td>
+    </div>
 
-                    <td>{{ trek.location }}</td>
+    {% if assigned_treks %}
 
-                    <td>
+    <div class="row mb-4">
 
-                        {{ trek.start_date }}
+        <div class="col-md-4 mb-3">
 
-                        -
+            <div class="card shadow-sm h-100">
 
-                        {{ trek.end_date }}
+                <div class="card-body">
 
-                    </td>
+                    <div class="d-flex justify-content-between align-items-center">
 
-                    <td>
+                        <div>
 
-                        {{ participant_counts[trek.id] }}
+                            <p class="text-muted mb-1">
 
-                    </td>
+                                Assigned Treks
 
-                    <td>
+                            </p>
 
-                        {{ trek.status }}
+                            <h3 class="mb-0">
 
-                    </td>
+                                {{ assigned_treks|length }}
 
-                    <td>
-
-                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#detailsModal{{ trek.id }}">
-
-                            View Details
-
-                        </button>
-
-                        <button class="btn btn-success btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#participantsModal{{ trek.id }}">
-
-                            View Participants
-
-                        </button>
-
-                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#completeModal{{ trek.id }}">
-
-                            Mark Completed
-
-                        </button>
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
-        {% for trek in assigned_treks %}
-
-        <div class="modal fade" id="detailsModal{{ trek.id }}" tabindex="-1">
-
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-
-                <div class="modal-content">
-
-                    <div class="modal-header">
-
-                        <h5 class="modal-title">
-
-                            Trek Details
-
-                        </h5>
-
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        </button>
-
-                    </div>
-
-                    <div class="modal-body">
-
-                        <div class="row">
-
-                            <div class="col-md-6">
-
-                                <p><strong>Trek ID:</strong> {{ trek.public_id }}</p>
-
-                                <p><strong>Name:</strong> {{ trek.name }}</p>
-
-                                <p><strong>Location:</strong> {{ trek.location }}</p>
-
-                                <p><strong>Difficulty:</strong> {{ trek.difficulty }}</p>
-
-                                <p><strong>Duration:</strong> {{ trek.duration }} Days</p>
-
-                                <p><strong>Price:</strong> ₹{{ trek.price }}</p>
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <p><strong>Start Date:</strong> {{ trek.start_date.strftime("%d %b %Y") }}</p>
-
-                                <p><strong>End Date:</strong> {{ trek.end_date.strftime("%d %b %Y") }}</p>
-
-                                <p><strong>Available Slots:</strong> {{ trek.available_slots }}</p>
-
-                                <p><strong>Participants:</strong> {{ participant_counts[trek.id] }}</p>
-
-                                <p><strong>Booking Status:</strong> {{ trek.booking_status }}</p>
-
-                                <p><strong>Trek Status:</strong> {{ trek.status }}</p>
-
-                            </div>
+                            </h3>
 
                         </div>
 
-                        <hr>
+                        <i class="bi bi-map fs-1 text-primary"></i>
 
-                        <h6>Description</h6>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-3">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <p class="text-muted mb-1">
+
+                                Active Treks
+
+                            </p>
+
+                            <h3 class="mb-0">
+
+                                {{ assigned_treks|selectattr("status", "equalto", "Open")|list|length }}
+
+                            </h3>
+
+                        </div>
+
+                        <i class="bi bi-play-circle fs-1 text-success"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-3">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+
+                            <p class="text-muted mb-1">
+
+                                Total Participants
+
+                            </p>
+
+                            <h3 class="mb-0">
+
+                                {{ participant_counts.values()|sum }}
+
+                            </h3>
+
+                        </div>
+
+                        <i class="bi bi-people fs-1 text-info"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5 class="mb-0">
+
+                Assigned Treks
+
+            </h5>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover mb-0 align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th>Trek ID</th>
+
+                            <th>Trek</th>
+
+                            <th>Location</th>
+
+                            <th>Dates</th>
+
+                            <th>Participants</th>
+
+                            <th>Status</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for trek in assigned_treks %}
+
+                        <tr>
+
+                            <td>
+
+                                <strong>
+
+                                    {{ trek.public_id }}
+
+                                </strong>
+
+                            </td>
+
+                            <td>
+
+                                {{ trek.name }}
+
+                            </td>
+
+                            <td>
+
+                                {{ trek.location }}
+
+                            </td>
+
+                            <td>
+
+                                {{ trek.start_date.strftime("%d %b %Y") }}
+
+                                -
+
+                                {{ trek.end_date.strftime("%d %b %Y") }}
+
+                            </td>
+
+                            <td>
+
+                                <span class="badge bg-info text-dark">
+
+                                    {{ participant_counts[trek.id] }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                {% if trek.status == "Completed" %}
+
+                                <span class="badge bg-secondary">
+
+                                    Completed
+
+                                </span>
+
+                                {% elif trek.status == "Open" %}
+
+                                <span class="badge bg-success">
+
+                                    Open
+
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    {{ trek.status }}
+
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td class="text-nowrap">
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#detailsModal{{ trek.id }}"
+                                    title="View Trek Details">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-success btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#participantsModal{{ trek.id }}"
+                                    title="View Participants">
+
+                                    <i class="bi bi-people"></i>
+
+                                </button>
+
+                                {% if trek.status == "Open" %}
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-warning btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#completeModal{{ trek.id }}"
+                                    title="Mark Trek Completed">
+
+                                    <i class="bi bi-check-circle"></i>
+
+                                </button>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div class="card shadow-sm">
+
+        <div class="card-body text-center py-5">
+
+            <i class="bi bi-map fs-1 text-muted"></i>
+
+            <h4 class="mt-3">
+
+                No Treks Assigned
+
+            </h4>
+
+            <p class="text-muted mb-0">
+
+                You currently do not have any treks assigned to you.
+
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% if assigned_treks %}
+
+{% for trek in assigned_treks %}
+
+<div
+    class="modal fade"
+    id="detailsModal{{ trek.id }}"
+    tabindex="-1"
+    aria-labelledby="detailsModalLabel{{ trek.id }}"
+    aria-hidden="true">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5
+                    class="modal-title"
+                    id="detailsModalLabel{{ trek.id }}">
+
+                    Trek Details
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+
+                    <div class="col-md-6">
 
                         <p>
 
-                            {{ trek.description }}
+                            <strong>Trek ID:</strong><br>
+
+                            {{ trek.public_id }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Trek Name:</strong><br>
+
+                            {{ trek.name }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Location:</strong><br>
+
+                            {{ trek.location }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Difficulty:</strong><br>
+
+                            {{ trek.difficulty }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Duration:</strong><br>
+
+                            {{ trek.duration }} Days
+
+                        </p>
+
+                        <p>
+
+                            <strong>Price:</strong><br>
+
+                            ₹{{ trek.price }}
 
                         </p>
 
                     </div>
 
-                    <div class="modal-footer">
+                    <div class="col-md-6">
 
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">
+                        <p>
 
-                            Close
+                            <strong>Start Date:</strong><br>
 
-                        </button>
+                            {{ trek.start_date.strftime("%d %B %Y") }}
 
-                    </div>
+                        </p>
 
-                </div>
+                        <p>
 
-            </div>
+                            <strong>End Date:</strong><br>
 
-        </div>
+                            {{ trek.end_date.strftime("%d %B %Y") }}
 
-        <div class="modal fade" id="participantsModal{{ trek.id }}" tabindex="-1">
+                        </p>
 
-            <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <p>
 
-                <div class="modal-content">
+                            <strong>Available Slots:</strong><br>
 
-                    <div class="modal-header">
+                            {{ trek.available_slots }}
 
-                        <h5 class="modal-title">
+                        </p>
 
-                            Participants - {{ trek.name }}
+                        <p>
 
-                        </h5>
+                            <strong>Participants:</strong><br>
 
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        </button>
+                            {{ participant_counts[trek.id] }}
 
-                    </div>
+                        </p>
 
-                    <div class="modal-body">
+                        <p>
 
-                        {% if participants[trek.id] %}
+                            <strong>Booking Status:</strong><br>
 
-                        <table class="table table-bordered table-hover">
+                            {% if trek.booking_status == "Open" %}
 
-                            <thead class="table-dark">
+                            <span class="badge bg-success">
 
-                                <tr>
+                                Open
 
-                                    <th>Booking ID</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Booking Date</th>
-                                    <th>Status</th>
+                            </span>
 
-                                </tr>
+                            {% else %}
 
-                            </thead>
+                            <span class="badge bg-secondary">
 
-                            <tbody>
+                                {{ trek.booking_status }}
 
-                                {% for booking in participants[trek.id] %}
+                            </span>
 
-                                <tr>
+                            {% endif %}
 
-                                    <td>{{ booking.public_id }}</td>
+                        </p>
 
-                                    <td>{{ booking.user.name }}</td>
+                        <p>
 
-                                    <td>{{ booking.user.email }}</td>
+                            <strong>Trek Status:</strong><br>
 
-                                    <td>{{ booking.booking_date.strftime("%d %b %Y") }}</td>
+                            {% if trek.status == "Completed" %}
 
-                                    <td>{{ booking.status }}</td>
+                            <span class="badge bg-secondary">
 
-                                </tr>
+                                Completed
 
-                                {% endfor %}
+                            </span>
 
-                            </tbody>
+                            {% elif trek.status == "Open" %}
 
-                        </table>
+                            <span class="badge bg-success">
 
-                        {% else %}
+                                Open
 
-                        <div class="alert alert-info">
+                            </span>
 
-                            No active participants for this trek.
+                            {% else %}
 
-                        </div>
+                            <span class="badge bg-warning text-dark">
 
-                        {% endif %}
+                                {{ trek.status }}
 
-                    </div>
+                            </span>
 
-                    <div class="modal-footer">
+                            {% endif %}
 
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">
-
-                            Close
-
-                        </button>
+                        </p>
 
                     </div>
 
                 </div>
 
+                <hr>
+
+                <h6>
+
+                    Description
+
+                </h6>
+
+                <p class="mb-0">
+
+                    {{ trek.description or "No description available." }}
+
+                </p>
+
             </div>
 
-        </div>
-        <div class="modal fade" id="completeModal{{ trek.id }}" tabindex="-1">
+            <div class="modal-footer">
 
-            <div class="modal-dialog modal-dialog-centered">
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
 
-                <div class="modal-content">
+                    Close
 
-                    <div class="modal-header">
-
-                        <h5 class="modal-title">
-
-                            Complete Trek
-
-                        </h5>
-
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        </button>
-
-                    </div>
-
-                    <div class="modal-body">
-
-                        Are you sure you want to mark
-
-                        <strong>{{ trek.name }}</strong>
-
-                        as completed?
-
-                        <hr>
-
-                        <div class="alert alert-warning mb-0">
-
-                            This action will:
-
-                            <ul class="mb-0 mt-2">
-                                <li>Mark the trek as <strong>Completed</strong>.</li>
-                                <li>Close bookings permanently.</li>
-                                <li>Mark all active bookings as <strong>Completed</strong>.</li>
-                            </ul>
-
-                        </div>
-
-                    </div>
-
-                    <div class="modal-footer">
-
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">
-
-                            Cancel
-
-                        </button>
-
-                        <form method="POST" action="{{ url_for('staff.complete_trek', trek_id=trek.id) }}">
-
-                            <button type="submit" class="btn btn-warning">
-
-                                Mark Completed
-
-                            </button>
-
-                        </form>
-
-                    </div>
-
-                </div>
+                </button>
 
             </div>
 
         </div>
 
-        {% endfor %}
-
-        {% else %}
-
-        <div class="alert alert-info">
-
-            No treks assigned yet.
-
-        </div>
-        {% endif %}
     </div>
-    
+
+</div>
+
+<div
+    class="modal fade"
+    id="participantsModal{{ trek.id }}"
+    tabindex="-1"
+    aria-labelledby="participantsModalLabel{{ trek.id }}"
+    aria-hidden="true">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5
+                    class="modal-title"
+                    id="participantsModalLabel{{ trek.id }}">
+
+                    Participants - {{ trek.name }}
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                {% if participants[trek.id] %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover align-middle">
+
+                        <thead class="table-dark">
+
+                            <tr>
+
+                                <th>Booking ID</th>
+
+                                <th>Name</th>
+
+                                <th>Email</th>
+
+                                <th>Booking Date</th>
+
+                                <th>Status</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for booking in participants[trek.id] %}
+
+                            <tr>
+
+                                <td>
+
+                                    {{ booking.public_id }}
+
+                                </td>
+
+                                <td>
+
+                                    {{ booking.user.name }}
+
+                                </td>
+
+                                <td>
+
+                                    {{ booking.user.email }}
+
+                                </td>
+
+                                <td>
+
+                                    {{ booking.booking_date.strftime("%d %b %Y") }}
+
+                                </td>
+
+                                <td>
+
+                                    {% if booking.status == "Booked" %}
+
+                                    <span class="badge bg-success">
+
+                                        Booked
+
+                                    </span>
+
+                                    {% elif booking.status == "Completed" %}
+
+                                    <span class="badge bg-secondary">
+
+                                        Completed
+
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="badge bg-warning text-dark">
+
+                                        {{ booking.status }}
+
+                                    </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {% else %}
+
+                <div class="alert alert-info mb-0">
+
+                    No active participants for this trek.
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Close
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% if trek.status == "Open" %}
+
+<div
+    class="modal fade"
+    id="completeModal{{ trek.id }}"
+    tabindex="-1"
+    aria-labelledby="completeModalLabel{{ trek.id }}"
+    aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5
+                    class="modal-title"
+                    id="completeModalLabel{{ trek.id }}">
+
+                    Confirm Trek Completion
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <p>
+
+                    Are you sure you want to mark
+
+                    <strong>{{ trek.name }}</strong>
+
+                    as completed?
+
+                </p>
+
+                <div class="alert alert-warning mb-0">
+
+                    <strong>This action cannot be reversed.</strong>
+
+                    <ul class="mb-0 mt-2">
+
+                        <li>
+                            The trek will be marked as Completed.
+                        </li>
+
+                        <li>
+                            Bookings will be closed permanently.
+                        </li>
+
+                        <li>
+                            All active bookings will be marked as Completed.
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Cancel
+
+                </button>
+
+                <form
+                    method="POST"
+                    action="{{ url_for('staff.complete_trek', trek_id=trek.id) }}">
+
+                    <button
+                        type="submit"
+                        class="btn btn-warning">
+
+                        <i class="bi bi-check-circle me-1"></i>
+
+                        Mark Completed
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endfor %}
+
+{% endif %}
+
 {% endblock %}

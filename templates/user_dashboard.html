@@ -8,59 +8,158 @@ User Dashboard
 
 <div class="list-group">
 
-    <a href="{{ url_for('user.user_dashboard') }}"
-        class="list-group-item list-group-item-action active">
+    <a href="{{ url_for('user.user_dashboard') }}" class="list-group-item list-group-item-action active">
 
         Dashboard
 
     </a>
 
-    <a href="{{ url_for('user.my_bookings') }}"
-        class="list-group-item list-group-item-action">
+    <a href="{{ url_for('user.my_bookings') }}" class="list-group-item list-group-item-action">
 
         My Bookings
 
     </a>
 
-    <a href="{{ url_for('auth.logout') }}"
-        class="list-group-item list-group-item-action text-danger">
+    <a href="{{ url_for('user.profile') }}" class="list-group-item list-group-item-action">
+
+        My Profile
+
+    </a>
+
+    <button type="button" class="list-group-item list-group-item-action sidebar-logout" data-bs-toggle="modal"
+        data-bs-target="#logoutModal">
+
+        <i class="bi bi-box-arrow-right me-2"></i>
 
         Logout
 
-    </a>
+    </button>
 
 </div>
 
 {% endblock %}
 
 {% block content %}
-   
-    <div class="container mt-5">
 
-        <h2 class="mb-4">
+<div class="container mt-4">
 
-            Welcome,
-            {{ session["name"] }}
+    <h2 class="mb-4">
 
-        </h2>
+        Welcome, {{ session["name"] }}
 
-        <!-- Search -->
+    </h2>
 
-        <form method="GET">
+    <h3 class="mb-4">
 
-            <div class="row mb-4">
+        Available Treks
 
-                <div class="col-md-10">
+    </h3>
 
-                    <input type="text" class="form-control" placeholder="Search Trek">
+    <div class="row">
+
+        {% for trek in treks %}
+
+        <div class="col-lg-6 mb-4">
+
+            <div class="card shadow h-100">
+
+                <div class="card-body">
+
+                    <h4 class="card-title">
+
+                        {{ trek.name }}
+
+                    </h4>
+
+                    <hr>
+
+                    <p>
+
+                        <strong>Trek ID:</strong>
+
+                        {{ trek.public_id }}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Location:</strong>
+
+                        {{ trek.location }}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Difficulty:</strong>
+
+                        {{ trek.difficulty }}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Duration:</strong>
+
+                        {{ trek.duration }} Days
+
+                    </p>
+
+                    <p>
+
+                        <strong>Dates:</strong>
+
+                        {{ trek.start_date }} - {{ trek.end_date }}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Available Slots:</strong>
+
+                        {{ trek.available_slots }}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Price:</strong>
+
+                        ₹{{ trek.price }}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Guide:</strong>
+
+                        {% if trek.assigned_staff %}
+
+                        {{ trek.assigned_staff.name }}
+
+                        {% else %}
+
+                        Not Assigned
+
+                        {% endif %}
+
+                    </p>
 
                 </div>
 
-                <div class="col-md-2">
+                <div class="card-footer bg-white">
 
-                    <button class="btn btn-success w-100">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#trekModal{{ trek.id }}">
 
-                        Search
+                        View Details
+
+                    </button>
+
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                        data-bs-target="#bookTrekModal{{ trek.id }}">
+
+                        Book Trek
 
                     </button>
 
@@ -68,35 +167,47 @@ User Dashboard
 
             </div>
 
-        </form>
+        </div>
 
-        <h3 class="mb-4">
+        <div class="modal fade" id="trekModal{{ trek.id }}" tabindex="-1" aria-labelledby="trekModalLabel{{ trek.id }}"
+            aria-hidden="true">
 
-            Available Treks
+            <div class="modal-dialog modal-lg modal-dialog-centered">
 
-        </h3>
+                <div class="modal-content">
 
-        <div class="row">
+                    <div class="modal-header">
 
-            {% for trek in treks %}
-
-            <div class="col-lg-6 mb-4">
-
-                <div class="card shadow h-100">
-
-                    <div class="card-body">
-
-                        <h4 class="card-title">
+                        <h4 class="modal-title" id="trekModalLabel{{ trek.id }}">
 
                             {{ trek.name }}
 
                         </h4>
 
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+
+                    </div>
+
+                    <div class="modal-body">
+
+                        <p>
+
+                            <strong>Description</strong>
+
+                        </p>
+
+                        <p>
+
+                            {{ trek.description or "No description available." }}
+
+                        </p>
+
                         <hr>
 
                         <p>
 
-                            <strong>Trek ID :</strong>
+                            <strong>Trek ID:</strong>
 
                             {{ trek.public_id }}
 
@@ -104,7 +215,7 @@ User Dashboard
 
                         <p>
 
-                            <strong>Location :</strong>
+                            <strong>Location:</strong>
 
                             {{ trek.location }}
 
@@ -112,7 +223,7 @@ User Dashboard
 
                         <p>
 
-                            <strong>Difficulty :</strong>
+                            <strong>Difficulty:</strong>
 
                             {{ trek.difficulty }}
 
@@ -120,7 +231,7 @@ User Dashboard
 
                         <p>
 
-                            <strong>Duration :</strong>
+                            <strong>Duration:</strong>
 
                             {{ trek.duration }} Days
 
@@ -128,27 +239,15 @@ User Dashboard
 
                         <p>
 
-                            <strong>Dates :</strong>
+                            <strong>Dates:</strong>
 
-                            {{ trek.start_date }}
-
-                            -
-
-                            {{ trek.end_date }}
+                            {{ trek.start_date }} - {{ trek.end_date }}
 
                         </p>
 
                         <p>
 
-                            <strong>Available Slots :</strong>
-
-                            {{ trek.available_slots }}
-
-                        </p>
-
-                        <p>
-
-                            <strong>Price :</strong>
+                            <strong>Price:</strong>
 
                             ₹{{ trek.price }}
 
@@ -156,7 +255,15 @@ User Dashboard
 
                         <p>
 
-                            <strong>Guide :</strong>
+                            <strong>Available Slots:</strong>
+
+                            {{ trek.available_slots }}
+
+                        </p>
+
+                        <p>
+
+                            <strong>Guide:</strong>
 
                             {% if trek.assigned_staff %}
 
@@ -172,16 +279,16 @@ User Dashboard
 
                     </div>
 
-                    <div class="card-footer bg-white">
+                    <div class="modal-footer">
 
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#trekModal{{ trek.id }}">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
 
-                            View Details
+                            Close
 
                         </button>
 
-                        <button class="btn btn-success" data-bs-toggle="modal"
-                            data-bs-target="#bookTrekModal{{ trek.id }}">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#bookTrekModal{{ trek.id }}" data-bs-dismiss="modal">
 
                             Book Trek
 
@@ -193,263 +300,153 @@ User Dashboard
 
             </div>
 
-            <!-- Trek Details Modal -->
+        </div>
 
-            <div class="modal fade" id="trekModal{{ trek.id }}" tabindex="-1">
+        <div class="modal fade" id="bookTrekModal{{ trek.id }}" tabindex="-1"
+            aria-labelledby="bookTrekModalLabel{{ trek.id }}" aria-hidden="true">
 
-                <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-dialog modal-dialog-centered">
 
-                    <div class="modal-content">
+                <div class="modal-content">
 
-                        <div class="modal-header">
+                    <div class="modal-header">
 
-                            <h4>
+                        <h5 class="modal-title" id="bookTrekModalLabel{{ trek.id }}">
 
-                                {{ trek.name }}
+                            Confirm Booking
 
-                            </h4>
+                        </h5>
 
-                            <button class="btn-close" data-bs-dismiss="modal">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        </button>
 
-                            </button>
+                    </div>
 
-                        </div>
+                    <div class="modal-body">
 
-                        <div class="modal-body">
+                        <p>
 
-                            <p>
+                            <strong>Trek</strong><br>
 
-                                <strong>Description</strong>
+                            {{ trek.name }}
 
-                            </p>
+                        </p>
 
-                            <p>
+                        <p>
 
-                                {{ trek.description }}
+                            <strong>Location</strong><br>
 
-                            </p>
+                            {{ trek.location }}
 
-                            <hr>
+                        </p>
 
-                            <p>
+                        <p>
 
-                                <strong>Location :</strong>
+                            <strong>Guide</strong><br>
 
-                                {{ trek.location }}
+                            {% if trek.assigned_staff %}
 
-                            </p>
+                            {{ trek.assigned_staff.name }}
 
-                            <p>
+                            {% else %}
 
-                                <strong>Difficulty :</strong>
+                            Not Assigned
 
-                                {{ trek.difficulty }}
+                            {% endif %}
 
-                            </p>
+                        </p>
 
-                            <p>
+                        <p>
 
-                                <strong>Duration :</strong>
+                            <strong>Dates</strong><br>
 
-                                {{ trek.duration }} Days
+                            {{ trek.start_date }} - {{ trek.end_date }}
 
-                            </p>
+                        </p>
 
-                            <p>
+                        <p>
 
-                                <strong>Dates :</strong>
+                            <strong>Price</strong><br>
 
-                                {{ trek.start_date }}
+                            ₹{{ trek.price }}
 
-                                -
+                        </p>
 
-                                {{ trek.end_date }}
+                        <p>
 
-                            </p>
+                            <strong>Available Slots</strong><br>
 
-                            <p>
+                            {{ trek.available_slots }}
 
-                                <strong>Price :</strong>
+                        </p>
 
-                                ₹{{ trek.price }}
+                        <hr>
 
-                            </p>
+                        <p class="text-danger fw-bold mb-0">
 
-                            <p>
+                            Are you sure you want to book this trek?
 
-                                <strong>Available Slots :</strong>
+                        </p>
 
-                                {{ trek.available_slots }}
+                    </div>
 
-                            </p>
+                    <div class="modal-footer">
 
-                            <p>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
 
-                                <strong>Guide :</strong>
+                            Cancel
 
-                                {% if trek.assigned_staff %}
+                        </button>
 
-                                {{ trek.assigned_staff.name }}
+                        <a href="{{ url_for('user.book_trek', trek_id=trek.id) }}" class="btn btn-success">
 
-                                {% else %}
+                            Confirm Booking
 
-                                Not Assigned
-
-                                {% endif %}
-
-                            </p>
-
-                        </div>
-
-                        <div class="modal-footer">
-
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">
-
-                                Close
-
-                            </button>
-
-                            <button class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#bookTrekModal{{ trek.id }}">
-
-                                Book Trek
-
-                            </button>
-
-                        </div>
+                        </a>
 
                     </div>
 
                 </div>
 
             </div>
-
-            <div class="modal fade" id="bookTrekModal{{ trek.id }}" tabindex="-1">
-
-                <div class="modal-dialog modal-dialog-centered">
-
-                    <div class="modal-content">
-
-                        <div class="modal-header">
-
-                            <h5 class="modal-title">
-
-                                Confirm Booking
-
-                            </h5>
-
-                            <button type="button" class="btn-close" data-bs-dismiss="modal">
-                            </button>
-
-                        </div>
-
-                        <div class="modal-body">
-
-                            <p>
-
-                                <strong>Trek</strong><br>
-
-                                {{ trek.name }}
-
-                            </p>
-
-                            <p>
-
-                                <strong>Location</strong><br>
-
-                                {{ trek.location }}
-
-                            </p>
-
-                            <p>
-
-                                <strong>Guide</strong><br>
-
-                                {% if trek.assigned_staff %}
-
-                                {{ trek.assigned_staff.name }}
-
-                                {% else %}
-
-                                Not Assigned
-
-                                {% endif %}
-
-                            </p>
-
-                            <p>
-
-                                <strong>Dates</strong><br>
-
-                                {{ trek.start_date }} - {{ trek.end_date }}
-
-                            </p>
-
-                            <p>
-
-                                <strong>Price</strong><br>
-
-                                ₹{{ trek.price }}
-
-                            </p>
-
-                            <p>
-
-                                <strong>Available Slots</strong><br>
-
-                                {{ trek.available_slots }}
-
-                            </p>
-
-                            <hr>
-
-                            <p class="text-danger fw-bold">
-
-                                Are you sure you want to book this trek?
-
-                            </p>
-
-                        </div>
-
-                        <div class="modal-footer">
-
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-
-                                Cancel
-
-                            </button>
-
-                            <a href="{{ url_for('user.book_trek', trek_id=trek.id) }}" class="btn btn-success">
-
-                                Confirm Booking
-
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            {% else %}
-
-            <div class="col-12">
-
-                <div class="alert alert-warning text-center">
-
-                    No Open Treks Available.
-
-                </div>
-
-            </div>
-
-            {% endfor %}
 
         </div>
 
+        {% else %}
+
+        <div class="col-12">
+
+            <div class="alert alert-info text-center">
+
+                <h5 class="mb-2">
+
+                    No Treks Available for Booking
+
+                </h5>
+
+                <p class="mb-0">
+
+                    You have either booked all currently available treks
+                    or there are no open treks at the moment.
+
+                    You can view your existing bookings from
+
+                    <a href="{{ url_for('user.my_bookings') }}">
+
+                        My Bookings
+
+                    </a>.
+
+                </p>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
     </div>
 
-{% endblock %}
+</div>
 
+{% endblock %}

@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, session, flash
+from flask import Blueprint, render_template, redirect, url_for, session, flash, request
 from extensions import db
 from models.trek import Trek
 from models.booking import Booking
+from models.user import User
 
 user = Blueprint("user", __name__)
 
@@ -15,9 +16,18 @@ def user_dashboard():
     if session["role"] != "user":
         return "Access Denied", 403
 
-    treks = Trek.query.filter_by(
-        status="Open",
-        booking_status="Open"
+    booked_trek_ids = db.session.query(
+        Booking.trek_id
+    ).filter(
+        Booking.user_id == session["user_id"],
+        Booking.status == "Booked"
+    ).subquery()
+
+    treks = Trek.query.filter(
+        Trek.status == "Open",
+        Trek.booking_status == "Open",
+        Trek.available_slots > 0,
+        ~Trek.id.in_(booked_trek_ids)
     ).all()
 
     return render_template(
@@ -61,7 +71,7 @@ def book_trek(trek_id):
 
     if existing_booking:
         flash("You have already booked this trek.", "warning")
-        return redirect(url_for("user.user_dashboard"))
+        return redirect(url_for("user.my_bookings"))
 
     booking_count = Booking.query.count() + 1
 
@@ -146,3 +156,59 @@ def cancel_booking(booking_id):
     flash("Booking cancelled successfully.", "success")
 
     return redirect(url_for("user.my_bookings"))
+
+
+@user.route("/user/profile", methods=["GET", "POST"])
+def profile():
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "user":
+        return "Access Denied", 403
+
+    user_account = db.session.get(User, session["user_id"])
+
+    if not user_account:
+        session.clear()
+        return redirect(url_for("auth.login"))
+
+    if request.method == "POST":
+
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        phone = request.form.get("phone", "").strip()
+
+        if not name:
+            flash("Name cannot be empty.", "danger")
+            return redirect(url_for("user.profile"))
+
+        if not email:
+            flash("Email cannot be empty.", "danger")
+            return redirect(url_for("user.profile"))
+
+        existing_user = User.query.filter(
+            User.email == email,
+            User.id != user_account.id
+        ).first()
+
+        if existing_user:
+            flash("This email address is already registered.", "danger")
+            return redirect(url_for("user.profile"))
+
+        user_account.name = name
+        user_account.email = email
+        user_account.phone = phone if phone else None
+
+        session["name"] = name
+
+        db.session.commit()
+
+        flash("Profile updated successfully.", "success")
+
+        return redirect(url_for("user.profile"))
+
+    return render_template(
+        "profile.html",
+        user=user_account
+    )
