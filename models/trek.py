@@ -39,6 +39,12 @@ class Trek(db.Model):
     default="Closed"
     )
 
+    rating = db.Column(
+    db.Float,
+    nullable=False,
+    default=0.0
+    )
+    
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
 

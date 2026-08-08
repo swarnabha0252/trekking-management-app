@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, session, request, flash
+from werkzeug.security import generate_password_hash, check_password_hash
 from extensions import db
 from models.user import User
 from models.trek import Trek
@@ -10,80 +11,392 @@ admin = Blueprint("admin", __name__)
 
 @admin.route("/admin")
 def admin_dashboard():
+
     if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
     if session["role"] != "admin":
         return "Access Denied", 403
 
-    total_users = User.query.filter_by(role="user").count()
-    total_staff = User.query.filter_by(role="trek_staff").count()
+    total_users = User.query.filter_by(
+        role="user"
+    ).count()
+
+    total_staff = User.query.filter_by(
+        role="trek_staff"
+    ).count()
+
     total_treks = Trek.query.count()
-    total_bookings = 0
+
+    total_bookings = Booking.query.count()
+
+    active_bookings = Booking.query.filter_by(
+        status="Booked"
+    ).count()
+
+    completed_bookings = Booking.query.filter_by(
+        status="Completed"
+    ).count()
+
+    cancelled_bookings = Booking.query.filter_by(
+        status="Cancelled"
+    ).count()
 
     return render_template(
         "admin_dashboard.html",
         total_users=total_users,
         total_staff=total_staff,
         total_treks=total_treks,
-        total_bookings=total_bookings
+        total_bookings=total_bookings,
+        active_bookings=active_bookings,
+        completed_bookings=completed_bookings,
+        cancelled_bookings=cancelled_bookings
     )
-
 @admin.route("/admin/users")
 def manage_users():
+
     if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
     if session["role"] != "admin":
         return "Access Denied", 403
 
-    return render_template("manage_users.html")
+    users = User.query.filter_by(
+        role="user"
+    ).all()
+
+    return render_template(
+        "manage_users.html",
+        users=users
+    )
+
+@admin.route("/admin/users/block/<int:user_id>", methods=["POST"])
+def block_user(user_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    user = db.session.get(User, user_id)
+
+    if user is None or user.role != "user":
+        flash("User not found.", "danger")
+        return redirect(url_for("admin.manage_users"))
+
+    if user.is_blacklisted:
+        flash("User is already blocked.", "warning")
+        return redirect(url_for("admin.manage_users"))
+
+    user.is_blacklisted = True
+
+    db.session.commit()
+
+    flash(
+        f"User {user.name} has been blocked successfully.",
+        "success"
+    )
+
+    return redirect(url_for("admin.manage_users"))
+
+
+@admin.route("/admin/users/unblock/<int:user_id>", methods=["POST"])
+def unblock_user(user_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    user = db.session.get(User, user_id)
+
+    if user is None or user.role != "user":
+        flash("User not found.", "danger")
+        return redirect(url_for("admin.manage_users"))
+
+    if not user.is_blacklisted:
+        flash("User is already active.", "warning")
+        return redirect(url_for("admin.manage_users"))
+
+    user.is_blacklisted = False
+
+    db.session.commit()
+
+    flash(
+        f"User {user.name} has been unblocked successfully.",
+        "success"
+    )
+
+    return redirect(url_for("admin.manage_users"))
 
 @admin.route("/admin/staff")
 def manage_staff():
+
     if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
     if session["role"] != "admin":
         return "Access Denied", 403
+
+    active_staff = User.query.filter_by(
+        role="trek_staff",
+        is_approved=True
+    ).order_by(
+        User.id.asc()
+    ).all()
 
     pending_staff = User.query.filter_by(
         role="trek_staff",
         is_approved=False
+    ).order_by(
+        User.id.asc()
     ).all()
 
     return render_template(
         "manage_staff.html",
+        active_staff=active_staff,
         pending_staff=pending_staff
     )
 
 
 @admin.route("/admin/staff/approve/<int:user_id>")
 def approve_staff(user_id):
+
     if "user_id" not in session:
         return redirect(url_for("auth.login"))
 
     if session["role"] != "admin":
         return "Access Denied", 403
 
-    staff_member = db.session.get(User, user_id)
+    staff_member = db.session.get(
+        User,
+        user_id
+    )
 
-    if (
-        staff_member is None
-        or staff_member.role != "trek_staff"
-        or staff_member.is_approved
-    ):
-        return "Invalid staff member.", 404
+    if staff_member is None:
+        flash(
+            "Staff member not found.",
+            "danger"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    if staff_member.role != "trek_staff":
+        flash(
+            "Invalid staff account.",
+            "danger"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    if staff_member.is_approved:
+        flash(
+            "This staff account is already approved.",
+            "warning"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
 
     staff_member.is_approved = True
+    staff_member.is_blacklisted = False
+
     db.session.commit()
 
-    return redirect(url_for("admin.manage_staff"))
+    flash(
+        f"{staff_member.name}'s staff account has been approved successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for("admin.manage_staff")
+    )
 
 
 @admin.route("/admin/staff/reject/<int:user_id>")
 def reject_staff(user_id):
-    return "Reject functionality coming soon."
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    staff_member = db.session.get(
+        User,
+        user_id
+    )
+
+    if staff_member is None:
+        flash(
+            "Staff member not found.",
+            "danger"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    if staff_member.role != "trek_staff":
+        flash(
+            "Invalid staff account.",
+            "danger"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    if staff_member.is_approved:
+        flash(
+            "This staff account has already been approved.",
+            "warning"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    db.session.delete(staff_member)
+    db.session.commit()
+
+    flash(
+        "Staff registration request rejected successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for("admin.manage_staff")
+    )
+
+
+@admin.route("/admin/staff/block/<int:user_id>")
+def block_staff(user_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    staff_member = db.session.get(
+        User,
+        user_id
+    )
+
+    if staff_member is None:
+        flash(
+            "Staff member not found.",
+            "danger"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    if staff_member.role != "trek_staff":
+        flash(
+            "Invalid staff account.",
+            "danger"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    if not staff_member.is_approved:
+        flash(
+            "Pending staff accounts cannot be blocked.",
+            "warning"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    if staff_member.is_blacklisted:
+        flash(
+            "This staff member is already blocked.",
+            "warning"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    staff_member.is_blacklisted = True
+
+    db.session.commit()
+
+    flash(
+        f"{staff_member.name} has been blocked successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for("admin.manage_staff")
+    )
+
+
+@admin.route("/admin/staff/unblock/<int:user_id>")
+def unblock_staff(user_id):
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    staff_member = db.session.get(
+        User,
+        user_id
+    )
+
+    if staff_member is None:
+        flash(
+            "Staff member not found.",
+            "danger"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    if staff_member.role != "trek_staff":
+        flash(
+            "Invalid staff account.",
+            "danger"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    if not staff_member.is_approved:
+        flash(
+            "This staff account is still pending approval.",
+            "warning"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    if not staff_member.is_blacklisted:
+        flash(
+            "This staff member is already active.",
+            "warning"
+        )
+        return redirect(
+            url_for("admin.manage_staff")
+        )
+
+    staff_member.is_blacklisted = False
+
+    db.session.commit()
+
+    flash(
+        f"{staff_member.name} has been unblocked successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for("admin.manage_staff")
+    )
 
 
 @admin.route("/admin/treks")
@@ -474,3 +787,70 @@ def reports():
         completed_booking_count=completed_booking_count,
         cancelled_booking_count=cancelled_booking_count
     )
+
+
+@admin.route("/admin/settings")
+def settings():
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    admin_user = db.session.get(User, session["user_id"])
+
+    if admin_user is None:
+        session.clear()
+        return redirect(url_for("auth.login"))
+
+    return render_template(
+        "settings.html",
+        admin_user=admin_user
+    )
+
+@admin.route("/admin/settings/change-password", methods=["POST"])
+def change_password():
+
+    if "user_id" not in session:
+        return redirect(url_for("auth.login"))
+
+    if session["role"] != "admin":
+        return "Access Denied", 403
+
+    admin_user = db.session.get(User, session["user_id"])
+
+    if admin_user is None:
+        session.clear()
+        return redirect(url_for("auth.login"))
+
+    current_password = request.form.get("current_password")
+    new_password = request.form.get("new_password")
+    confirm_password = request.form.get("confirm_password")
+
+    if not current_password or not new_password or not confirm_password:
+        flash("All password fields are required.", "danger")
+        return redirect(url_for("admin.settings"))
+
+    if not check_password_hash(
+        admin_user.password,
+        current_password
+    ):
+        flash("Current password is incorrect.", "danger")
+        return redirect(url_for("admin.settings"))
+
+    if new_password != confirm_password:
+        flash("New passwords do not match.", "danger")
+        return redirect(url_for("admin.settings"))
+
+    if len(new_password) < 6:
+        flash("New password must contain at least 6 characters.", "warning")
+        return redirect(url_for("admin.settings"))
+
+    admin_user.password = generate_password_hash(new_password)
+
+    db.session.commit()
+
+    flash("Password changed successfully.", "success")
+
+    return redirect(url_for("admin.settings"))

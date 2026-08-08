@@ -2,15 +2,67 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <title>{% block title %}Trekking Management System{% endblock %}</title>
+    <title>
+        {% block title %}
+        Trekking Management System
+        {% endblock %}
+    </title>
+
+    <style>
+        .sidebar-logout {
+            color: #dc3545;
+            background-color: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .sidebar-logout:hover {
+            color: #ffffff !important;
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+        }
+
+        .sidebar-logout:focus {
+            color: #dc3545;
+            background-color: transparent;
+            border-color: rgba(0, 0, 0, 0.125);
+            box-shadow: none;
+        }
+
+        .sidebar-logout:active {
+            color: #ffffff !important;
+            background-color: #bb2d3b !important;
+            border-color: #b02a37 !important;
+        }
+
+        .flash-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(600px, 90%);
+            z-index: 9999;
+        }
+
+        .flash-container .alert {
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar .list-group-item {
+            border-radius: 0;
+        }
+    </style>
 
 </head>
 
@@ -47,31 +99,30 @@
 
                 <div class="content p-4">
 
-                    <!-- Flash Messages -->
-
                     {% with messages = get_flashed_messages(with_categories=true) %}
 
                     {% if messages %}
 
-                    {% for category, message in messages %}
+                    <div class="flash-container">
 
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {% for category, message in messages %}
 
-                        {{ message }}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
 
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                            {{ message }}
 
-                        </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                            </button>
+
+                        </div>
+
+                        {% endfor %}
 
                     </div>
-
-                    {% endfor %}
 
                     {% endif %}
 
                     {% endwith %}
-
-                    <!-- Page Content -->
 
                     {% block content %}
                     {% endblock %}
@@ -83,64 +134,163 @@
         </div>
 
     </div>
-    
+
     <footer class="text-center py-3 bg-light">
 
         <p class="mb-0">
-
             &copy; 2026 Trekking Management System. All Rights Reserved.
-
         </p>
 
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-        </script>
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
 
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title" id="logoutModalLabel">
+
+                        Confirm Logout
+
+                    </h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    Are you sure you want to logout?
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+
+                        Cancel
+
+                    </button>
+
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
+
+                        Logout
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
+    </script>
     <script>
 
-        const password = document.getElementById("password");
-        const togglePassword = document.getElementById("togglePassword");
+        const logoutModalElement =
+            document.getElementById("logoutModal");
+
+        const logoutButton =
+            document.querySelector(".sidebar-logout");
+
+        if (logoutModalElement && logoutButton) {
+
+            logoutModalElement.addEventListener(
+                "hidden.bs.modal",
+                function () {
+
+                    logoutButton.blur();
+
+                }
+            );
+
+        }
+
+    </script>
+    <script>
+
+        const password =
+            document.getElementById("password");
+
+        const togglePassword =
+            document.getElementById("togglePassword");
 
         if (password && togglePassword) {
 
-            togglePassword.addEventListener("click", function () {
+            togglePassword.addEventListener(
+                "click",
+                function () {
 
-                const type = password.getAttribute("type") === "password"
-                    ? "text"
-                    : "password";
+                    const type =
+                        password.getAttribute("type") === "password"
+                            ? "text"
+                            : "password";
 
-                password.setAttribute("type", type);
+                    password.setAttribute("type", type);
 
-                this.innerHTML = type === "password"
-                    ? '<i class="bi bi-eye"></i>'
-                    : '<i class="bi bi-eye-slash"></i>';
+                    this.innerHTML =
+                        type === "password"
+                            ? '<i class="bi bi-eye"></i>'
+                            : '<i class="bi bi-eye-slash"></i>';
 
-            });
+                }
+            );
 
         }
 
-        const confirmPassword = document.getElementById("confirm_password");
-        const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+        const confirmPassword =
+            document.getElementById("confirm_password");
+
+        const toggleConfirmPassword =
+            document.getElementById("toggleConfirmPassword");
 
         if (confirmPassword && toggleConfirmPassword) {
 
-            toggleConfirmPassword.addEventListener("click", function () {
+            toggleConfirmPassword.addEventListener(
+                "click",
+                function () {
 
-                const type = confirmPassword.getAttribute("type") === "password"
-                    ? "text"
-                    : "password";
+                    const type =
+                        confirmPassword.getAttribute("type") === "password"
+                            ? "text"
+                            : "password";
 
-                confirmPassword.setAttribute("type", type);
+                    confirmPassword.setAttribute("type", type);
 
-                this.innerHTML = type === "password"
-                    ? '<i class="bi bi-eye"></i>'
-                    : '<i class="bi bi-eye-slash"></i>';
+                    this.innerHTML =
+                        type === "password"
+                            ? '<i class="bi bi-eye"></i>'
+                            : '<i class="bi bi-eye-slash"></i>';
+
+                }
+            );
+
+        }
+
+        setTimeout(function () {
+
+            const alerts =
+                document.querySelectorAll(
+                    ".flash-container .alert"
+                );
+
+            alerts.forEach(function (alert) {
+
+                const bsAlert =
+                    bootstrap.Alert.getOrCreateInstance(alert);
+
+                bsAlert.close();
 
             });
 
-        }
+        }, 3000);
 
     </script>
 

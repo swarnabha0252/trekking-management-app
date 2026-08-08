@@ -6,8 +6,66 @@ Reports
 
 {% block sidebar %}
 
-<!-- Copy the same admin sidebar -->
-<!-- Make Reports active -->
+<div class="list-group">
+
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="list-group-item list-group-item-action">
+
+        Dashboard
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_treks') }}" class="list-group-item list-group-item-action">
+
+        Treks
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_staff') }}" class="list-group-item list-group-item-action">
+
+        Staff
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_users') }}" class="list-group-item list-group-item-action">
+
+        Users
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_bookings') }}" class="list-group-item list-group-item-action">
+
+        Bookings
+
+    </a>
+
+    <a href="{{ url_for('admin.search') }}" class="list-group-item list-group-item-action">
+
+        Search
+
+    </a>
+
+    <a href="{{ url_for('admin.reports') }}" class="list-group-item list-group-item-action active">
+
+        Reports
+
+    </a>
+
+    <a href="{{ url_for('admin.settings') }}" class="list-group-item list-group-item-action">
+
+        Settings
+
+    </a>
+
+    <button type="button" class="list-group-item list-group-item-action sidebar-logout" data-bs-toggle="modal"
+        data-bs-target="#logoutModal">
+
+        <i class="bi bi-box-arrow-right me-2"></i>
+        Logout
+
+    </button>
+
+</div>
+
 
 {% endblock %}
 

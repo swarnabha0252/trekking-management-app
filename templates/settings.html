@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+
+{% block title %}
+Settings
+{% endblock %}
+
+{% block sidebar %}
+
+<div class="list-group">
+
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="list-group-item list-group-item-action">
+
+        Dashboard
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_treks') }}" class="list-group-item list-group-item-action">
+
+        Treks
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_staff') }}" class="list-group-item list-group-item-action">
+
+        Staff
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_users') }}" class="list-group-item list-group-item-action">
+
+        Users
+
+    </a>
+
+    <a href="{{ url_for('admin.manage_bookings') }}" class="list-group-item list-group-item-action">
+
+        Bookings
+
+    </a>
+
+    <a href="{{ url_for('admin.search') }}" class="list-group-item list-group-item-action">
+        Search
+    </a>
+
+    <a href="{{ url_for('admin.reports') }}" class="list-group-item list-group-item-action">
+
+        Reports
+
+    </a>
+
+    <a href="{{ url_for('admin.settings') }}" class="list-group-item list-group-item-action active">
+
+        Settings
+
+    </a>
+
+    <button type="button" class="list-group-item list-group-item-action sidebar-logout" data-bs-toggle="modal"
+        data-bs-target="#logoutModal">
+
+        <i class="bi bi-box-arrow-right me-2"></i>
+        Logout
+
+    </button>
+
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Settings
+</h2>
+
+<div class="row g-4">
+
+    <div class="col-lg-6">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-header">
+
+                <strong>
+                    Administrator Profile
+                </strong>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+
+                    <label class="form-label text-muted">
+                        User ID
+                    </label>
+
+                    <input type="text" class="form-control" value="{{ admin_user.public_id }}" readonly>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label text-muted">
+                        Name
+                    </label>
+
+                    <input type="text" class="form-control" value="{{ admin_user.name }}" readonly>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label text-muted">
+                        Email
+                    </label>
+
+                    <input type="email" class="form-control" value="{{ admin_user.email }}" readonly>
+
+                </div>
+
+                <div>
+
+                    <label class="form-label text-muted">
+                        Role
+                    </label>
+
+                    <div>
+
+                        <span class="badge bg-primary">
+                            Administrator
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-lg-6">
+
+        <div class="card shadow-sm h-100">
+
+            <div class="card-header">
+
+                <strong>
+                    Account Security
+                </strong>
+
+            </div>
+
+            <div class="card-body">
+
+                <p class="text-muted">
+                    Change your administrator account password.
+                </p>
+
+                <form method="POST" action="{{ url_for('admin.change_password') }}">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Current Password
+                        </label>
+
+                        <input type="password" name="current_password" class="form-control" required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            New Password
+                        </label>
+
+                        <input type="password" name="new_password" class="form-control" minlength="6" required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Confirm New Password
+                        </label>
+
+                        <input type="password" name="confirm_password" class="form-control" minlength="6" required>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+
+                        <i class="bi bi-shield-lock"></i>
+
+                        Change Password
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-lg-6">
+
+        <div class="card shadow-sm">
+
+            <div class="card-header">
+
+                <strong>
+                    Application
+                </strong>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="row mb-3">
+
+                    <div class="col-sm-5 text-muted">
+                        Application
+                    </div>
+
+                    <div class="col-sm-7 fw-semibold">
+                        Trekking Management System
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+
+                    <div class="col-sm-5 text-muted">
+                        Version
+                    </div>
+
+                    <div class="col-sm-7">
+                        1.0.0
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+
+                    <div class="col-sm-5 text-muted">
+                        Framework
+                    </div>
+
+                    <div class="col-sm-7">
+                        Flask
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+
+                    <div class="col-sm-5 text-muted">
+                        Database
+                    </div>
+
+                    <div class="col-sm-7">
+                        SQLite
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-sm-5 text-muted">
+                        Interface
+                    </div>
+
+                    <div class="col-sm-7">
+                        Bootstrap 5
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-lg-6">
+
+        <div class="card shadow-sm">
+
+            <div class="card-header">
+
+                <strong>
+                    System Information
+                </strong>
+
+            </div>
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-between mb-3">
+
+                    <span>
+                        Admin Account
+                    </span>
+
+                    <span class="badge bg-success">
+                        Active
+                    </span>
+
+                </div>
+
+                <div class="d-flex justify-content-between mb-3">
+
+                    <span>
+                        Authentication
+                    </span>
+
+                    <span class="badge bg-success">
+                        Enabled
+                    </span>
+
+                </div>
+
+                <div class="d-flex justify-content-between">
+
+                    <span>
+                        Database
+                    </span>
+
+                    <span class="badge bg-success">
+                        Connected
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

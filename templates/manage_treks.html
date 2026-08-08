@@ -49,17 +49,19 @@ Manage Treks
 
     </a>
 
-    <a href="#" class="list-group-item list-group-item-action">
+    <a href="{{ url_for('admin.settings') }}" class="list-group-item list-group-item-action">
 
         Settings
 
     </a>
 
-    <a href="{{ url_for('auth.logout') }}" class="list-group-item list-group-item-action text-danger">
+    <button type="button" class="list-group-item list-group-item-action sidebar-logout" data-bs-toggle="modal"
+        data-bs-target="#logoutModal">
 
+        <i class="bi bi-box-arrow-right me-2"></i>
         Logout
 
-    </a>
+    </button>
 
 </div>
 

@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, redirect, url_for, session, flash
 from extensions import db
 from models.trek import Trek
 from models.booking import Booking
+from models.user import User
+
 
 staff = Blueprint("staff", __name__)
 
@@ -14,6 +16,28 @@ def staff_dashboard():
 
     if session["role"] != "trek_staff":
         return "Access Denied", 403
+
+    staff_member = db.session.get(
+        User,
+        session["user_id"]
+    )
+
+    if staff_member is None:
+        session.clear()
+        return redirect(url_for("auth.login"))
+
+    if staff_member.is_blacklisted:
+
+        session.clear()
+
+        flash(
+            "Your account has been blocked by the administrator. Kindly contact the administrator for further assistance.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("auth.login")
+        )
 
     assigned_treks = Trek.query.filter_by(
         assigned_staff_id=session["user_id"]
@@ -54,23 +78,76 @@ def complete_trek(trek_id):
     if session["role"] != "trek_staff":
         return "Access Denied", 403
 
-    trek = db.session.get(Trek, trek_id)
+    staff_member = db.session.get(
+        User,
+        session["user_id"]
+    )
+
+    if staff_member is None:
+        session.clear()
+        return redirect(url_for("auth.login"))
+
+    if staff_member.is_blacklisted:
+
+        session.clear()
+
+        flash(
+            "Your account has been blocked by the administrator. Kindly contact the administrator for further assistance.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("auth.login")
+        )
+
+    trek = db.session.get(
+        Trek,
+        trek_id
+    )
 
     if trek is None:
-        flash("Trek not found.", "danger")
-        return redirect(url_for("staff.staff_dashboard"))
+
+        flash(
+            "Trek not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("staff.staff_dashboard")
+        )
 
     if trek.assigned_staff_id != session["user_id"]:
-        flash("Unauthorized action.", "danger")
-        return redirect(url_for("staff.staff_dashboard"))
+
+        flash(
+            "Unauthorized action.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("staff.staff_dashboard")
+        )
 
     if trek.status == "Completed":
-        flash("Trek is already completed.", "warning")
-        return redirect(url_for("staff.staff_dashboard"))
+
+        flash(
+            "Trek is already completed.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("staff.staff_dashboard")
+        )
 
     if trek.status != "Open":
-        flash("Only open treks can be marked as completed.", "warning")
-        return redirect(url_for("staff.staff_dashboard"))
+
+        flash(
+            "Only open treks can be marked as completed.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("staff.staff_dashboard")
+        )
 
     trek.status = "Completed"
     trek.booking_status = "Closed"
@@ -81,10 +158,16 @@ def complete_trek(trek_id):
     ).all()
 
     for booking in active_bookings:
+
         booking.status = "Completed"
 
     db.session.commit()
 
-    flash("Trek marked as completed successfully!", "success")
+    flash(
+        "Trek marked as completed successfully!",
+        "success"
+    )
 
-    return redirect(url_for("staff.staff_dashboard"))
+    return redirect(
+        url_for("staff.staff_dashboard")
+    )
