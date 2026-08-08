@@ -74,15 +74,6 @@ This project is being developed as part of the **Modern Application Development 
 - Mark trek as completed
 - Automatic booking completion after trek completion
 
-### Planned
-
-- Settings page
-- Dashboard improvements
-- AJAX-based notifications
-- Email notifications
-- Pagination for large datasets
-- Export reports as PDF/CSV
-
 ---
 
 ## Tech Stack
@@ -250,21 +241,6 @@ http://127.0.0.1:5000/login
 - User Dashboard
 - My Bookings
 - Staff Dashboard
-
----
-
-## Future Enhancements
-
-- Profile Management
-- Settings Page
-- Email Notifications
-- AJAX-based Notifications
-- Pagination
-- Advanced Filters
-- Export Reports (PDF/CSV)
-- Image Upload for Treks
-- Trek Reviews and Ratings
-- Payment Gateway Integration
 
 ---
 

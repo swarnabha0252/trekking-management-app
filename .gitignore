@@ -1,9 +1,7 @@
 __pycache__/
 *.pyc
-
 instance/
 *.db
-
 venv/
 .venv/
 .env

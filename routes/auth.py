@@ -48,9 +48,6 @@ def login():
 
         if user:
 
-            # Check blocked status first so the user
-            # receives the correct notification.
-
             if user.is_blacklisted:
 
                 flash(
@@ -61,8 +58,6 @@ def login():
                 return redirect(
                     url_for("auth.login")
                 )
-
-            # Check password after checking account status.
 
             if not check_password_hash(
                 user.password,
@@ -78,7 +73,6 @@ def login():
                     url_for("auth.login")
                 )
 
-            # Check whether the account has been approved.
 
             if not user.is_approved:
 
@@ -91,7 +85,6 @@ def login():
                     url_for("auth.login")
                 )
 
-            # Create session.
 
             session["user_id"] = user.id
             session["role"] = user.role
@@ -101,7 +94,6 @@ def login():
                 url_for("auth.dashboard")
             )
 
-        # User with this email does not exist.
 
         flash(
             "Invalid email or password.",
@@ -156,8 +148,6 @@ def register():
                 url_for("auth.register")
             )
 
-        # Normal users are automatically approved.
-        # Admin and Trek Staff accounts require approval.
 
         if role == "user":
 
@@ -167,7 +157,6 @@ def register():
 
             approved = False
 
-        # Generate public ID.
 
         if role == "admin":
 
