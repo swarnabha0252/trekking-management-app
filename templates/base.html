@@ -36,6 +36,31 @@
 
     </nav>
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+    <div class="flash-container">
+
+        {% for category, message in messages %}
+
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+
+            {{ message }}
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+            </button>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+    {% endwith %}
+
     <div class="page-content">
 
         {% block page_layout %}
@@ -58,31 +83,6 @@
                 <div class="col-lg-10">
 
                     <div class="content p-4">
-
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-
-                        {% if messages %}
-
-                        <div class="flash-container">
-
-                            {% for category, message in messages %}
-
-                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-
-                                {{ message }}
-
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-                                </button>
-
-                            </div>
-
-                            {% endfor %}
-
-                        </div>
-
-                        {% endif %}
-
-                        {% endwith %}
 
                         {% block content %}
                         {% endblock %}
@@ -133,15 +133,11 @@
                 <div class="modal-footer">
 
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-
                         Cancel
-
                     </button>
 
                     <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">
-
                         Logout
-
                     </a>
 
                 </div>
