@@ -12,7 +12,16 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='3') }}">
+
+    <script>
+        (() => {
+            const savedTheme = localStorage.getItem("trekking-theme");
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            document.documentElement.dataset.theme =
+                savedTheme || (prefersDark ? "dark" : "light");
+        })();
+    </script>
 
     <title>
         {% block title %}
@@ -24,13 +33,19 @@
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg app-navbar">
 
         <div class="container-fluid">
 
             <a class="navbar-brand" href="/">
-                Trekking Management
+                <span>Trekking Management</span>
             </a>
+
+            <button class="theme-toggle" id="themeToggle" type="button"
+                aria-label="Switch to dark mode" aria-pressed="false">
+                <i class="bi bi-moon-stars-fill" aria-hidden="true"></i>
+                <span class="theme-toggle-label">Dark mode</span>
+            </button>
 
         </div>
 
@@ -61,7 +76,7 @@
 
     {% endwith %}
 
-    <div class="page-content">
+    <main class="page-content">
 
         {% block page_layout %}
 
@@ -97,9 +112,9 @@
 
         {% endblock %}
 
-    </div>
+    </main>
 
-    <footer class="text-center py-3 bg-light">
+    <footer class="app-footer text-center py-3">
 
         <p class="mb-0">
             &copy; 2026 Trekking Management System. All Rights Reserved.
@@ -152,6 +167,33 @@
     </script>
 
     <script>
+
+        const themeToggle = document.getElementById("themeToggle");
+
+        function updateThemeToggle(theme) {
+            const isDark = theme === "dark";
+            themeToggle.setAttribute("aria-pressed", String(isDark));
+            themeToggle.setAttribute(
+                "aria-label",
+                isDark ? "Switch to light mode" : "Switch to dark mode"
+            );
+            themeToggle.innerHTML = isDark
+                ? '<i class="bi bi-sun-fill" aria-hidden="true"></i><span class="theme-toggle-label">Light mode</span>'
+                : '<i class="bi bi-moon-stars-fill" aria-hidden="true"></i><span class="theme-toggle-label">Dark mode</span>';
+        }
+
+        if (themeToggle) {
+            updateThemeToggle(document.documentElement.dataset.theme);
+            themeToggle.addEventListener("click", function () {
+                const nextTheme =
+                    document.documentElement.dataset.theme === "dark"
+                        ? "light"
+                        : "dark";
+                document.documentElement.dataset.theme = nextTheme;
+                localStorage.setItem("trekking-theme", nextTheme);
+                updateThemeToggle(nextTheme);
+            });
+        }
 
         const logoutModalElement =
             document.getElementById("logoutModal");
